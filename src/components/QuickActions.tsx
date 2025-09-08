@@ -4,10 +4,12 @@ import { Card } from "@/components/ui/card";
 import { PenTool, Mail, Gift, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import GratitudeLetter from "./GratitudeLetter";
+import GoodDeed from "./GoodDeed";
 
 const QuickActions = () => {
   const { toast } = useToast();
   const [isLetterModalOpen, setIsLetterModalOpen] = useState(false);
+  const [isGoodDeedModalOpen, setIsGoodDeedModalOpen] = useState(false);
 
   const actions = [
     {
@@ -34,10 +36,7 @@ const QuickActions = () => {
       description: "Faça o bem hoje",
       color: "bg-gradient-gratitude",
       action: () => {
-        toast({
-          title: "Inspiração do dia ✨",
-          description: "Que tal ajudar alguém com um pequeno gesto hoje?",
-        });
+        setIsGoodDeedModalOpen(true);
       }
     },
     {
@@ -83,6 +82,11 @@ const QuickActions = () => {
       <GratitudeLetter 
         isOpen={isLetterModalOpen} 
         onOpenChange={setIsLetterModalOpen} 
+      />
+      
+      <GoodDeed 
+        isOpen={isGoodDeedModalOpen} 
+        onOpenChange={setIsGoodDeedModalOpen} 
       />
     </>
   );
