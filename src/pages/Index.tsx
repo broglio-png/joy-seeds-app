@@ -1,12 +1,32 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import Header from "@/components/Header";
+import InspirationCard from "@/components/InspirationCard";
+import GratitudeEntry from "@/components/GratitudeEntry";
+import StatsCard from "@/components/StatsCard";
+import QuickActions from "@/components/QuickActions";
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen">
+      <Header />
+      
+      <main className="p-6 space-y-6 max-w-md mx-auto">
+        {/* Daily Inspiration */}
+        <InspirationCard />
+        
+        {/* Quick Actions */}
+        <QuickActions />
+        
+        {/* Stats */}
+        <StatsCard />
+        
+        {/* Main Gratitude Entry */}
+        <div id="gratitude-entry">
+          <GratitudeEntry />
+        </div>
+        
+        {/* Footer Space */}
+        <div className="h-8"></div>
+      </main>
     </div>
   );
 };

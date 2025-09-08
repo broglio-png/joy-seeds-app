@@ -2,41 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* Gratitude App Design System - Inspired by nature and well-being 
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Base colors - Soft, calming background */
+    --background: 45 25% 98%;
+    --foreground: 150 25% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Card surfaces - Subtle warmth */
+    --card: 45 35% 96%;
+    --card-foreground: 150 25% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 45 35% 96%;
+    --popover-foreground: 150 25% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Calming sage green (hope and growth) */
+    --primary: 140 35% 45%;
+    --primary-foreground: 45 35% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Soft golden warmth (gratitude and appreciation) */
+    --secondary: 45 60% 88%;
+    --secondary-foreground: 150 25% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted - Gentle neutrals */
+    --muted: 45 25% 92%;
+    --muted-foreground: 150 15% 55%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - Peaceful blue (tranquility) */
+    --accent: 200 45% 85%;
+    --accent-foreground: 150 25% 25%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Success - Nature green */
+    --success: 140 55% 50%;
+    --success-foreground: 45 35% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Gratitude gold - Premium feeling */
+    --gratitude: 45 75% 65%;
+    --gratitude-foreground: 150 25% 15%;
 
-    --radius: 0.5rem;
+    /* Inspiration - Soft lavender */
+    --inspiration: 260 35% 80%;
+    --inspiration-foreground: 150 25% 25%;
+
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 45 35% 98%;
+
+    --border: 45 25% 88%;
+    --input: 45 25% 90%;
+    --ring: 140 35% 45%;
+
+    --radius: 0.75rem;
+
+    /* Gradients for beautiful effects */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(140 45% 55%));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(45 70% 75%));
+    --gradient-gratitude: linear-gradient(135deg, hsl(var(--gratitude)), hsl(45 85% 75%));
+    --gradient-peaceful: linear-gradient(135deg, hsl(var(--accent)), hsl(200 55% 75%));
+
+    /* Shadows for depth */
+    --shadow-soft: 0 4px 20px -4px hsl(var(--primary) / 0.15);
+    --shadow-warm: 0 8px 32px -8px hsl(var(--gratitude) / 0.2);
+    --shadow-card: 0 2px 16px -2px hsl(140 35% 45% / 0.1);
+
+    /* Animations */
+    --transition-gentle: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
 

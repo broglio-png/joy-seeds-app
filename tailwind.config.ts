@@ -47,6 +47,18 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        gratitude: {
+          DEFAULT: "hsl(var(--gratitude))",
+          foreground: "hsl(var(--gratitude-foreground))",
+        },
+        inspiration: {
+          DEFAULT: "hsl(var(--inspiration))",
+          foreground: "hsl(var(--inspiration-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -62,6 +74,21 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      backgroundImage: {
+        'gradient-primary': 'var(--gradient-primary)',
+        'gradient-secondary': 'var(--gradient-secondary)',
+        'gradient-gratitude': 'var(--gradient-gratitude)',
+        'gradient-peaceful': 'var(--gradient-peaceful)',
+      },
+      boxShadow: {
+        'soft': 'var(--shadow-soft)',
+        'warm': 'var(--shadow-warm)',
+        'card': 'var(--shadow-card)',
+      },
+      transitionTimingFunction: {
+        'gentle': 'var(--transition-gentle)',
+        'bounce': 'var(--transition-bounce)',
       },
       keyframes: {
         "accordion-down": {
