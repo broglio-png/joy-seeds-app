@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PenTool, Mail, Gift, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import GratitudeLetter from "./GratitudeLetter";
 
 const QuickActions = () => {
   const { toast } = useToast();
+  const [isLetterModalOpen, setIsLetterModalOpen] = useState(false);
 
   const actions = [
     {
@@ -22,10 +25,7 @@ const QuickActions = () => {
       description: "Agradeça alguém",
       color: "bg-gradient-peaceful",
       action: () => {
-        toast({
-          title: "Em desenvolvimento 💝",
-          description: "Função de cartas chegando em breve!",
-        });
+        setIsLetterModalOpen(true);
       }
     },
     {
@@ -55,29 +55,36 @@ const QuickActions = () => {
   ];
 
   return (
-    <Card className="p-6 bg-card border-0 shadow-card">
-      <h3 className="font-bold text-card-foreground mb-4">Ações Rápidas</h3>
-      
-      <div className="grid grid-cols-2 gap-3">
-        {actions.map((action, index) => {
-          const Icon = action.icon;
-          return (
-            <Button
-              key={index}
-              onClick={action.action}
-              variant="ghost"
-              className={`${action.color} h-auto p-4 flex flex-col items-center gap-2 text-primary-foreground hover:opacity-90 transition-gentle border-0`}
-            >
-              <Icon className="w-6 h-6" />
-              <div className="text-center">
-                <p className="font-semibold text-sm">{action.title}</p>
-                <p className="text-xs opacity-80">{action.description}</p>
-              </div>
-            </Button>
-          );
-        })}
-      </div>
-    </Card>
+    <>
+      <Card className="p-6 bg-card border-0 shadow-card">
+        <h3 className="font-bold text-card-foreground mb-4">Ações Rápidas</h3>
+        
+        <div className="grid grid-cols-2 gap-3">
+          {actions.map((action, index) => {
+            const Icon = action.icon;
+            return (
+              <Button
+                key={index}
+                onClick={action.action}
+                variant="ghost"
+                className={`${action.color} h-auto p-4 flex flex-col items-center gap-2 text-primary-foreground hover:opacity-90 transition-gentle border-0`}
+              >
+                <Icon className="w-6 h-6" />
+                <div className="text-center">
+                  <p className="font-semibold text-sm">{action.title}</p>
+                  <p className="text-xs opacity-80">{action.description}</p>
+                </div>
+              </Button>
+            );
+          })}
+        </div>
+      </Card>
+
+      <GratitudeLetter 
+        isOpen={isLetterModalOpen} 
+        onOpenChange={setIsLetterModalOpen} 
+      />
+    </>
   );
 };
 
