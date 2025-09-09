@@ -9,7 +9,7 @@ const Header = () => {
         </div>
         <div>
           <h1 className="text-xl font-bold text-primary-foreground">Diário da Gratidão</h1>
-          <p className="text-sm text-primary-foreground/80">GRA</p>
+          <p className="text-sm text-primary-foreground/80">"A gratidão é a ferramenta mais poderosa no nosso relacionamento com Deus" - Rev. Alexandre Broglio</p>
         </div>
       </div>
       
