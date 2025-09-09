@@ -5,11 +5,13 @@ import { PenTool, Mail, Gift, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import GratitudeLetter from "./GratitudeLetter";
 import GoodDeed from "./GoodDeed";
+import History from "./History";
 
 const QuickActions = () => {
   const { toast } = useToast();
   const [isLetterModalOpen, setIsLetterModalOpen] = useState(false);
   const [isGoodDeedModalOpen, setIsGoodDeedModalOpen] = useState(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
   const actions = [
     {
@@ -45,10 +47,7 @@ const QuickActions = () => {
       description: "Ver registros passados",
       color: "bg-gradient-secondary",
       action: () => {
-        toast({
-          title: "Histórico 📖",
-          description: "Funcionalidade de histórico em desenvolvimento!",
-        });
+        setIsHistoryModalOpen(true);
       }
     }
   ];
@@ -87,6 +86,11 @@ const QuickActions = () => {
       <GoodDeed 
         isOpen={isGoodDeedModalOpen} 
         onOpenChange={setIsGoodDeedModalOpen} 
+      />
+      
+      <History 
+        isOpen={isHistoryModalOpen} 
+        onOpenChange={setIsHistoryModalOpen} 
       />
     </>
   );
