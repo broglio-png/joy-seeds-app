@@ -5,6 +5,20 @@ import { Card } from "@/components/ui/card";
 import { Heart, Plus, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+// Security constants for GratitudeEntry
+const MAX_GRATITUDE_TEXT_LENGTH = 500;
+const MAX_GRATITUDE_REASON_LENGTH = 300;
+
+// Input sanitization function
+const sanitizeInput = (input: string): string => {
+  return input
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/\//g, "&#x2F;");
+};
+
 interface GratitudeItem {
   text: string;
   reason: string;
@@ -20,13 +34,24 @@ const GratitudeEntry = () => {
   const { toast } = useToast();
 
   const updateGratitude = (index: number, field: 'text' | 'reason', value: string) => {
-    const updated = [...gratitudes];
-    updated[index] = { ...updated[index], [field]: value };
-    setGratitudes(updated);
+    const maxLength = field === 'text' ? MAX_GRATITUDE_TEXT_LENGTH : MAX_GRATITUDE_REASON_LENGTH;
+    
+    // Only update if within length limit
+    if (value.length <= maxLength) {
+      const updated = [...gratitudes];
+      updated[index] = { ...updated[index], [field]: value };
+      setGratitudes(updated);
+    }
   };
 
   const handleSubmit = () => {
-    const filledGratitudes = gratitudes.filter(g => g.text.trim() && g.reason.trim());
+    // Sanitize and validate gratitudes
+    const sanitizedGratitudes = gratitudes.map(g => ({
+      text: sanitizeInput(g.text.trim()),
+      reason: sanitizeInput(g.reason.trim())
+    }));
+    
+    const filledGratitudes = sanitizedGratitudes.filter(g => g.text && g.reason);
     
     if (filledGratitudes.length === 0) {
       toast({
@@ -37,7 +62,7 @@ const GratitudeEntry = () => {
       return;
     }
 
-    // Here you would save to local storage or backend
+    // Here you would save sanitized data to local storage or backend
     setIsSubmitted(true);
     toast({
       title: "Gratidões registradas! 🎉",
@@ -102,8 +127,12 @@ const GratitudeEntry = () => {
                 placeholder="Descreva algo pelo qual você é grato..."
                 value={gratitude.text}
                 onChange={(e) => updateGratitude(index, 'text', e.target.value)}
+                maxLength={MAX_GRATITUDE_TEXT_LENGTH}
                 className="min-h-[80px] bg-background border-border/50 focus:border-primary transition-gentle"
               />
+              <div className="text-xs text-muted-foreground text-right">
+                {gratitude.text.length}/{MAX_GRATITUDE_TEXT_LENGTH}
+              </div>
               
               <div className="space-y-2">
                 <label className="text-sm font-medium text-card-foreground">
@@ -113,8 +142,12 @@ const GratitudeEntry = () => {
                   placeholder="Reflita sobre o significado deste momento..."
                   value={gratitude.reason}
                   onChange={(e) => updateGratitude(index, 'reason', e.target.value)}
+                  maxLength={MAX_GRATITUDE_REASON_LENGTH}
                   className="min-h-[60px] bg-background border-border/50 focus:border-primary transition-gentle"
                 />
+                <div className="text-xs text-muted-foreground text-right">
+                  {gratitude.reason.length}/{MAX_GRATITUDE_REASON_LENGTH}
+                </div>
               </div>
             </div>
           ))}

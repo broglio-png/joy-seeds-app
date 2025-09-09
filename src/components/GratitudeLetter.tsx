@@ -5,8 +5,26 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Mail, Send, Heart } from "lucide-react";
+import { Mail, Send, Heart, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+// Security constants
+const MAX_NAME_LENGTH = 100;
+const MAX_EMAIL_LENGTH = 254; // RFC 5321 limit
+const MAX_MESSAGE_LENGTH = 2000;
+
+// Email validation regex
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Input sanitization function
+const sanitizeInput = (input: string): string => {
+  return input
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/\//g, "&#x2F;");
+};
 
 interface GratitudeLetterProps {
   isOpen: boolean;
@@ -19,9 +37,35 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
   const [recipientEmail, setRecipientEmail] = useState("");
   const [letterContent, setLetterContent] = useState("");
   const [senderName, setSenderName] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  const validateEmail = (email: string): boolean => {
+    if (!email) return true; // Email is optional
+    if (email.length > MAX_EMAIL_LENGTH) {
+      setEmailError("Email muito longo");
+      return false;
+    }
+    if (!EMAIL_REGEX.test(email)) {
+      setEmailError("Formato de email inválido");
+      return false;
+    }
+    setEmailError("");
+    return true;
+  };
+
+  const validateTextLength = (text: string, maxLength: number): boolean => {
+    return text.length <= maxLength;
+  };
 
   const handleSendLetter = () => {
-    if (!recipientName || !letterContent || !senderName) {
+    // Sanitize inputs
+    const sanitizedRecipientName = sanitizeInput(recipientName.trim());
+    const sanitizedRecipientEmail = recipientEmail.trim();
+    const sanitizedLetterContent = sanitizeInput(letterContent.trim());
+    const sanitizedSenderName = sanitizeInput(senderName.trim());
+
+    // Validation
+    if (!sanitizedRecipientName || !sanitizedLetterContent || !sanitizedSenderName) {
       toast({
         title: "Campos obrigatórios",
         description: "Preencha pelo menos o nome do destinatário, sua mensagem e seu nome.",
@@ -30,25 +74,58 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
       return;
     }
 
-    // Create mailto link
-    const subject = encodeURIComponent(`Uma carta de gratidão de ${senderName} 💝`);
+    // Length validation
+    if (!validateTextLength(sanitizedRecipientName, MAX_NAME_LENGTH)) {
+      toast({
+        title: "Nome muito longo",
+        description: `O nome do destinatário deve ter no máximo ${MAX_NAME_LENGTH} caracteres.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!validateTextLength(sanitizedSenderName, MAX_NAME_LENGTH)) {
+      toast({
+        title: "Nome muito longo",
+        description: `Seu nome deve ter no máximo ${MAX_NAME_LENGTH} caracteres.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!validateTextLength(sanitizedLetterContent, MAX_MESSAGE_LENGTH)) {
+      toast({
+        title: "Mensagem muito longa",
+        description: `A mensagem deve ter no máximo ${MAX_MESSAGE_LENGTH} caracteres.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Email validation
+    if (!validateEmail(sanitizedRecipientEmail)) {
+      return;
+    }
+
+    // Create mailto link with sanitized content
+    const subject = encodeURIComponent(`Uma carta de gratidão de ${sanitizedSenderName} 💝`);
     const body = encodeURIComponent(
-      `Querido(a) ${recipientName},\n\n${letterContent}\n\nCom gratidão,\n${senderName}\n\n---\nEscrita através do Diário da Gratidão GRA`
+      `Querido(a) ${sanitizedRecipientName},\n\n${sanitizedLetterContent}\n\nCom gratidão,\n${sanitizedSenderName}\n\n---\nEscrita através do Diário da Gratidão GRA`
     );
     
-    const mailtoLink = `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
+    const mailtoLink = `mailto:${sanitizedRecipientEmail}?subject=${subject}&body=${body}`;
     
     // Copy to clipboard as fallback
-    const letterText = `Querido(a) ${recipientName},\n\n${letterContent}\n\nCom gratidão,\n${senderName}`;
+    const letterText = `Querido(a) ${sanitizedRecipientName},\n\n${sanitizedLetterContent}\n\nCom gratidão,\n${sanitizedSenderName}`;
     navigator.clipboard.writeText(letterText);
     
-    if (recipientEmail) {
+    if (sanitizedRecipientEmail) {
       window.open(mailtoLink, '_blank');
     }
 
     toast({
       title: "Carta enviada! 💌",
-      description: recipientEmail ? "Link do email aberto. Carta copiada para área de transferência." : "Carta copiada para área de transferência.",
+      description: sanitizedRecipientEmail ? "Link do email aberto. Carta copiada para área de transferência." : "Carta copiada para área de transferência.",
     });
 
     // Reset form
@@ -56,6 +133,7 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
     setRecipientEmail("");
     setLetterContent("");
     setSenderName("");
+    setEmailError("");
     onOpenChange(false);
   };
 
@@ -86,9 +164,19 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
                 id="recipient"
                 placeholder="Nome da pessoa"
                 value={recipientName}
-                onChange={(e) => setRecipientName(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= MAX_NAME_LENGTH) {
+                    setRecipientName(value);
+                  }
+                }}
+                maxLength={MAX_NAME_LENGTH}
                 className="mt-1"
               />
+              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                <span></span>
+                <span>{recipientName.length}/{MAX_NAME_LENGTH}</span>
+              </div>
             </div>
             
             <div>
@@ -98,9 +186,26 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
                 type="email"
                 placeholder="email@exemplo.com"
                 value={recipientEmail}
-                onChange={(e) => setRecipientEmail(e.target.value)}
-                className="mt-1"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= MAX_EMAIL_LENGTH) {
+                    setRecipientEmail(value);
+                    validateEmail(value);
+                  }
+                }}
+                maxLength={MAX_EMAIL_LENGTH}
+                className={`mt-1 ${emailError ? 'border-destructive focus:border-destructive' : ''}`}
               />
+              {emailError && (
+                <div className="flex items-center gap-1 text-xs text-destructive mt-1">
+                  <AlertCircle className="w-3 h-3" />
+                  {emailError}
+                </div>
+              )}
+              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                <span></span>
+                <span>{recipientEmail.length}/{MAX_EMAIL_LENGTH}</span>
+              </div>
             </div>
           </div>
 
@@ -124,10 +229,20 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
               id="letter"
               placeholder="Escreva aqui sua mensagem de coração... Conte como essa pessoa impactou sua vida, o que você admira nela, ou simplesmente agradeça por algo específico que ela fez."
               value={letterContent}
-              onChange={(e) => setLetterContent(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value.length <= MAX_MESSAGE_LENGTH) {
+                  setLetterContent(value);
+                }
+              }}
+              maxLength={MAX_MESSAGE_LENGTH}
               rows={6}
               className="mt-1"
             />
+            <div className="flex justify-between text-xs text-muted-foreground mt-1">
+              <span></span>
+              <span>{letterContent.length}/{MAX_MESSAGE_LENGTH}</span>
+            </div>
           </div>
 
           {/* Sender Name */}
@@ -137,9 +252,19 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
               id="sender"
               placeholder="Como você gostaria de assinar?"
               value={senderName}
-              onChange={(e) => setSenderName(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value.length <= MAX_NAME_LENGTH) {
+                  setSenderName(value);
+                }
+              }}
+              maxLength={MAX_NAME_LENGTH}
               className="mt-1"
             />
+            <div className="flex justify-between text-xs text-muted-foreground mt-1">
+              <span></span>
+              <span>{senderName.length}/{MAX_NAME_LENGTH}</span>
+            </div>
           </div>
 
           {/* Action Buttons */}
