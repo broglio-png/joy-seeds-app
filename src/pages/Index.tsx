@@ -5,6 +5,8 @@ import StatsCard from "@/components/StatsCard";
 import QuickActions from "@/components/QuickActions";
 
 const Index = () => {
+  console.log("Index page rendering...");
+  
   return (
     <div className="min-h-screen">
       <Header />
