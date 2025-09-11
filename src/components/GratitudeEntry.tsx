@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Heart, Plus, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 // Security constants for GratitudeEntry
 const MAX_GRATITUDE_TEXT_LENGTH = 500;
@@ -25,13 +27,36 @@ interface GratitudeItem {
 }
 
 const GratitudeEntry = () => {
+  const { user } = useAuth();
   const [gratitudes, setGratitudes] = useState<GratitudeItem[]>([
     { text: "", reason: "" },
     { text: "", reason: "" },
     { text: "", reason: "" }
   ]);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  // Check if user already submitted gratitudes today
+  useEffect(() => {
+    checkTodaySubmission();
+  }, [user]);
+
+  const checkTodaySubmission = async () => {
+    if (!user) return;
+    
+    const today = new Date().toISOString().split('T')[0];
+    const { data } = await supabase
+      .from('gratitude_entries')
+      .select('*')
+      .eq('user_id', user.id)
+      .gte('created_at', `${today}T00:00:00.000Z`)
+      .lt('created_at', `${today}T23:59:59.999Z`);
+    
+    if (data && data.length > 0) {
+      setIsSubmitted(true);
+    }
+  };
 
   const updateGratitude = (index: number, field: 'text' | 'reason', value: string) => {
     const maxLength = field === 'text' ? MAX_GRATITUDE_TEXT_LENGTH : MAX_GRATITUDE_REASON_LENGTH;
@@ -44,7 +69,11 @@ const GratitudeEntry = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    
     // Sanitize and validate gratitudes
     const sanitizedGratitudes = gratitudes.map(g => ({
       text: sanitizeInput(g.text.trim()),
@@ -59,25 +88,37 @@ const GratitudeEntry = () => {
         description: "Registre algo pelo qual você é grato hoje.",
         variant: "destructive"
       });
+      setLoading(false);
       return;
     }
 
-    // Here you would save sanitized data to local storage or backend
-    setIsSubmitted(true);
-    toast({
-      title: "Gratidões registradas! 🎉",
-      description: `Você registrou ${filledGratitudes.length} bênção${filledGratitudes.length > 1 ? 'ões' : ''} hoje.`,
-    });
+    try {
+      // Save to Supabase
+      const gratitudesToSave = filledGratitudes.map(g => ({
+        user_id: user.id,
+        content: `${g.text} - ${g.reason}`
+      }));
 
-    // Reset for next day (in real app, this would be date-based)
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setGratitudes([
-        { text: "", reason: "" },
-        { text: "", reason: "" },
-        { text: "", reason: "" }
-      ]);
-    }, 3000);
+      const { error } = await supabase
+        .from('gratitude_entries')
+        .insert(gratitudesToSave);
+
+      if (error) throw error;
+
+      setIsSubmitted(true);
+      toast({
+        title: "Gratidões registradas! 🎉",
+        description: `Você registrou ${filledGratitudes.length} bênção${filledGratitudes.length > 1 ? 'ões' : ''} hoje.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao salvar",
+        description: "Não foi possível salvar suas gratidões. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+    
+    setLoading(false);
   };
 
   if (isSubmitted) {
@@ -155,11 +196,12 @@ const GratitudeEntry = () => {
 
         <Button 
           onClick={handleSubmit}
+          disabled={loading}
           variant="gradient"
           className="w-full font-semibold py-3 rounded-xl transition-gentle"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Registrar Minhas Gratidões
+          {loading ? "Salvando..." : "Registrar Minhas Gratidões"}
         </Button>
       </div>
     </Card>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { Mail, Send, Heart, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 // Security constants
 const MAX_NAME_LENGTH = 100;
@@ -32,12 +34,14 @@ interface GratitudeLetterProps {
 }
 
 const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
+  const { user } = useAuth();
   const { toast } = useToast();
   const [recipientName, setRecipientName] = useState("");
   const [recipientEmail, setRecipientEmail] = useState("");
   const [letterContent, setLetterContent] = useState("");
   const [senderName, setSenderName] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const validateEmail = (email: string): boolean => {
     if (!email) return true; // Email is optional
@@ -57,7 +61,11 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
     return text.length <= maxLength;
   };
 
-  const handleSendLetter = () => {
+  const handleSendLetter = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    
     // Sanitize inputs
     const sanitizedRecipientName = sanitizeInput(recipientName.trim());
     const sanitizedRecipientEmail = recipientEmail.trim();
@@ -71,6 +79,7 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
         description: "Preencha pelo menos o nome do destinatário, sua mensagem e seu nome.",
         variant: "destructive"
       });
+      setLoading(false);
       return;
     }
 
@@ -81,6 +90,7 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
         description: `O nome do destinatário deve ter no máximo ${MAX_NAME_LENGTH} caracteres.`,
         variant: "destructive"
       });
+      setLoading(false);
       return;
     }
 
@@ -90,6 +100,7 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
         description: `Seu nome deve ter no máximo ${MAX_NAME_LENGTH} caracteres.`,
         variant: "destructive"
       });
+      setLoading(false);
       return;
     }
 
@@ -99,42 +110,67 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
         description: `A mensagem deve ter no máximo ${MAX_MESSAGE_LENGTH} caracteres.`,
         variant: "destructive"
       });
+      setLoading(false);
       return;
     }
 
     // Email validation
     if (!validateEmail(sanitizedRecipientEmail)) {
+      setLoading(false);
       return;
     }
 
-    // Create mailto link with sanitized content
-    const subject = encodeURIComponent(`Uma carta de gratidão de ${sanitizedSenderName} 💝`);
-    const body = encodeURIComponent(
-      `Querido(a) ${sanitizedRecipientName},\n\n${sanitizedLetterContent}\n\nCom gratidão,\n${sanitizedSenderName}\n\n---\nEscrita através do Diário da Gratidão GRA`
-    );
-    
-    const mailtoLink = `mailto:${sanitizedRecipientEmail}?subject=${subject}&body=${body}`;
-    
-    // Copy to clipboard as fallback
-    const letterText = `Querido(a) ${sanitizedRecipientName},\n\n${sanitizedLetterContent}\n\nCom gratidão,\n${sanitizedSenderName}`;
-    navigator.clipboard.writeText(letterText);
-    
-    if (sanitizedRecipientEmail) {
-      window.open(mailtoLink, '_blank');
+    try {
+      // Save to database
+      const { error } = await supabase
+        .from('gratitude_letters')
+        .insert({
+          user_id: user.id,
+          recipient_name: sanitizedRecipientName,
+          recipient_email: sanitizedRecipientEmail || '',
+          content: sanitizedLetterContent,
+          sender_name: sanitizedSenderName
+        });
+
+      if (error) throw error;
+
+      // Create mailto link with sanitized content
+      const subject = encodeURIComponent(`Uma carta de gratidão de ${sanitizedSenderName} 💝`);
+      const body = encodeURIComponent(
+        `Querido(a) ${sanitizedRecipientName},\n\n${sanitizedLetterContent}\n\nCom gratidão,\n${sanitizedSenderName}\n\n---\nEscrita através do Diário da Gratidão GRA`
+      );
+      
+      const mailtoLink = `mailto:${sanitizedRecipientEmail}?subject=${subject}&body=${body}`;
+      
+      // Copy to clipboard as fallback
+      const letterText = `Querido(a) ${sanitizedRecipientName},\n\n${sanitizedLetterContent}\n\nCom gratidão,\n${sanitizedSenderName}`;
+      navigator.clipboard.writeText(letterText);
+      
+      if (sanitizedRecipientEmail) {
+        window.open(mailtoLink, '_blank');
+      }
+
+      toast({
+        title: "Carta salva e enviada! 💌",
+        description: sanitizedRecipientEmail ? "Carta salva no histórico. Link do email aberto. Carta copiada para área de transferência." : "Carta salva no histórico e copiada para área de transferência.",
+      });
+
+      // Reset form
+      setRecipientName("");
+      setRecipientEmail("");
+      setLetterContent("");
+      setSenderName("");
+      setEmailError("");
+      onOpenChange(false);
+    } catch (error) {
+      toast({
+        title: "Erro ao salvar",
+        description: "Não foi possível salvar a carta. Tente novamente.",
+        variant: "destructive"
+      });
     }
-
-    toast({
-      title: "Carta enviada! 💌",
-      description: sanitizedRecipientEmail ? "Link do email aberto. Carta copiada para área de transferência." : "Carta copiada para área de transferência.",
-    });
-
-    // Reset form
-    setRecipientName("");
-    setRecipientEmail("");
-    setLetterContent("");
-    setSenderName("");
-    setEmailError("");
-    onOpenChange(false);
+    
+    setLoading(false);
   };
 
   const inspirationalPrompts = [
@@ -278,11 +314,12 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
             </Button>
             <Button
               onClick={handleSendLetter}
+              disabled={loading}
               variant="gradient"
               className="flex-1 gap-2"
             >
               <Send className="w-4 h-4" />
-              Enviar Carta
+              {loading ? "Salvando..." : "Enviar Carta"}
             </Button>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Gift, Plus, CheckCircle, Lightbulb, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface GoodDeedProps {
   isOpen: boolean;
@@ -15,11 +17,18 @@ interface GoodDeedProps {
 }
 
 const GoodDeed = ({ isOpen, onOpenChange }: GoodDeedProps) => {
+  const { user } = useAuth();
   const { toast } = useToast();
   const [customDeed, setCustomDeed] = useState("");
   const [deedDescription, setDeedDescription] = useState("");
-  const [completedDeeds, setCompletedDeeds] = useState<string[]>([]);
+  const [completedDeeds, setCompletedDeeds] = useState<Array<{
+    id: string;
+    title: string;
+    description?: string;
+    date: string;
+  }>>([]);
   const [dailySuggestion, setDailySuggestion] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const goodDeedSuggestions = [
     "Ajude um idoso a atravessar a rua",
@@ -51,29 +60,68 @@ const GoodDeed = ({ isOpen, onOpenChange }: GoodDeedProps) => {
     const suggestionIndex = dayOfYear % goodDeedSuggestions.length;
     setDailySuggestion(goodDeedSuggestions[suggestionIndex]);
 
-    // Load completed deeds from localStorage
-    const saved = localStorage.getItem('completed-deeds');
-    if (saved) {
-      setCompletedDeeds(JSON.parse(saved));
+    // Load completed deeds from database when modal opens
+    if (isOpen && user) {
+      loadCompletedDeeds();
     }
-  }, []);
+  }, [isOpen, user]);
 
-  const saveDeed = (deed: string, description?: string) => {
-    const timestamp = new Date().toLocaleDateString('pt-BR');
-    const deedEntry = description ? `${deed} - ${description}` : deed;
-    const deedWithDate = `${deedEntry} (${timestamp})`;
+  const loadCompletedDeeds = async () => {
+    if (!user) return;
     
-    const updated = [...completedDeeds, deedWithDate];
-    setCompletedDeeds(updated);
-    localStorage.setItem('completed-deeds', JSON.stringify(updated));
+    const today = new Date().toISOString().split('T')[0];
+    const { data } = await supabase
+      .from('good_deeds')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('date', today)
+      .order('created_at', { ascending: false });
+    
+    if (data) {
+      setCompletedDeeds(data.map(deed => ({
+        id: deed.id,
+        title: deed.title,
+        description: deed.description || undefined,
+        date: deed.date
+      })));
+    }
+  };
 
-    toast({
-      title: "Boa ação registrada! 🌟",
-      description: "Você está espalhando bondade no mundo. Continue assim!",
-    });
+  const saveDeed = async (deed: string, description?: string) => {
+    if (!user) return;
+    
+    setLoading(true);
+    
+    try {
+      const { error } = await supabase
+        .from('good_deeds')
+        .insert({
+          user_id: user.id,
+          title: deed.trim(),
+          description: description?.trim() || null,
+          date: new Date().toISOString().split('T')[0]
+        });
 
-    setCustomDeed("");
-    setDeedDescription("");
+      if (error) throw error;
+
+      await loadCompletedDeeds();
+
+      toast({
+        title: "Boa ação registrada! 🌟",
+        description: "Você está espalhando bondade no mundo. Continue assim!",
+      });
+
+      setCustomDeed("");
+      setDeedDescription("");
+    } catch (error) {
+      toast({
+        title: "Erro ao salvar",
+        description: "Não foi possível registrar a boa ação. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+    
+    setLoading(false);
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -93,9 +141,7 @@ const GoodDeed = ({ isOpen, onOpenChange }: GoodDeedProps) => {
     saveDeed(customDeed, deedDescription);
   };
 
-  const todayDeeds = completedDeeds.filter(deed => 
-    deed.includes(new Date().toLocaleDateString('pt-BR'))
-  );
+  const todayDeeds = completedDeeds;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -119,10 +165,11 @@ const GoodDeed = ({ isOpen, onOpenChange }: GoodDeedProps) => {
               size="sm" 
               variant="outline"
               onClick={() => handleSuggestionClick(dailySuggestion)}
+              disabled={loading}
               className="w-full"
             >
               <CheckCircle className="w-4 h-4 mr-2" />
-              Fiz essa boa ação!
+              {loading ? "Registrando..." : "Fiz essa boa ação!"}
             </Button>
           </Card>
 
@@ -136,7 +183,7 @@ const GoodDeed = ({ isOpen, onOpenChange }: GoodDeedProps) => {
               <div className="space-y-2">
                 {todayDeeds.slice(0, 3).map((deed, index) => (
                   <Badge key={index} variant="secondary" className="text-xs block p-2 h-auto whitespace-normal">
-                    {deed.split(' (')[0]}
+                    {deed.title} {deed.description && `- ${deed.description}`}
                   </Badge>
                 ))}
                 {todayDeeds.length > 3 && (
@@ -155,6 +202,7 @@ const GoodDeed = ({ isOpen, onOpenChange }: GoodDeedProps) => {
                   key={index}
                   variant="ghost"
                   onClick={() => handleSuggestionClick(suggestion)}
+                  disabled={loading}
                   className="justify-start text-left h-auto p-3 text-xs"
                 >
                   <Plus className="w-3 h-3 mr-2 flex-shrink-0" />
@@ -187,17 +235,18 @@ const GoodDeed = ({ isOpen, onOpenChange }: GoodDeedProps) => {
 
             <Button
               onClick={handleCustomDeed}
+              disabled={!customDeed.trim() || loading}
               variant="gradient"
               className="w-full gap-2"
             >
               <CheckCircle className="w-4 h-4" />
-              Registrar Boa Ação
+              {loading ? "Registrando..." : "Registrar Boa Ação"}
             </Button>
           </div>
 
           {/* Stats */}
           <div className="text-center text-sm text-muted-foreground pt-2 border-t">
-            Total de boas ações registradas: <span className="font-semibold text-primary">{completedDeeds.length}</span>
+            Total de boas ações de hoje: <span className="font-semibold text-primary">{todayDeeds.length}</span>
           </div>
         </div>
       </DialogContent>
