@@ -54,10 +54,15 @@ const QuickActions = () => {
 
   return (
     <>
-      <Card className="p-6 bg-card border-0 shadow-card">
-        <h3 className="font-bold text-card-foreground mb-4">Ações Rápidas</h3>
+      <div className="card-sophisticated rounded-3xl p-8 animate-fade-in">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-gradient-hero rounded-xl">
+            <PenTool className="w-6 h-6 text-white" />
+          </div>
+          <h3 className="font-serif text-xl font-semibold text-card-foreground">Ações Rápidas</h3>
+        </div>
         
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           {actions.map((action, index) => {
             const Icon = action.icon;
             return (
@@ -65,18 +70,20 @@ const QuickActions = () => {
                 key={index}
                 onClick={action.action}
                 variant="ghost"
-                className={`${action.color} h-auto p-4 flex flex-col items-center gap-2 text-primary-foreground hover:opacity-90 transition-gentle border-0`}
+                className={`${action.color} h-auto p-6 flex flex-col items-center gap-3 text-white hover:opacity-90 btn-elegant shadow-soft border-0 rounded-2xl`}
               >
-                <Icon className="w-6 h-6" />
+                <div className="p-2 glass rounded-xl">
+                  <Icon className="w-6 h-6" />
+                </div>
                 <div className="text-center">
-                  <p className="font-semibold text-sm">{action.title}</p>
-                  <p className="text-xs opacity-80">{action.description}</p>
+                  <p className="font-semibold text-sm font-serif">{action.title}</p>
+                  <p className="text-xs opacity-90 font-medium">{action.description}</p>
                 </div>
               </Button>
             );
           })}
         </div>
-      </Card>
+      </div>
 
       <GratitudeLetter 
         isOpen={isLetterModalOpen} 

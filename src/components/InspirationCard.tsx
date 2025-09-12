@@ -239,28 +239,30 @@ const InspirationCard = () => {
   const quote = inspirationalQuotes[currentQuoteIndex];
 
   return (
-    <div className="bg-gradient-peaceful rounded-2xl p-6 shadow-card">
-      <div className="flex items-start gap-3">
-        <div className="p-2 bg-white/30 rounded-full shrink-0">
-          <Sparkles className="w-5 h-5 text-accent-foreground" />
+    <div className="card-sophisticated bg-gradient-peaceful rounded-3xl p-8 animate-scale-in">
+      <div className="flex items-start gap-4">
+        <div className="p-3 glass rounded-2xl shrink-0">
+          <Sparkles className="w-6 h-6 text-white" />
         </div>
-        <div className={`space-y-3 transition-opacity duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
-          <blockquote className="text-accent-foreground font-medium text-lg leading-relaxed">
+        <div className={`space-y-4 flex-1 transition-all duration-500 ${isAnimating ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}>
+          <blockquote className="text-white font-serif text-xl leading-relaxed font-medium">
             "{quote.text}"
           </blockquote>
-          <cite className="text-accent-foreground/70 text-sm font-medium">
+          <cite className="text-white/80 text-sm font-medium tracking-wide">
             — {quote.author}
           </cite>
         </div>
       </div>
       
-      {/* Indicador de progresso do carrossel */}
-      <div className="flex justify-center mt-4 gap-1">
-        {inspirationalQuotes.map((_, index) => (
+      {/* Indicador de progresso elegante */}
+      <div className="flex justify-center mt-6 gap-2">
+        {inspirationalQuotes.slice(0, 8).map((_, index) => (
           <div
             key={index}
-            className={`w-1 h-1 rounded-full transition-colors duration-300 ${
-              index === currentQuoteIndex ? 'bg-accent-foreground/50' : 'bg-accent-foreground/20'
+            className={`h-1 rounded-full transition-all duration-500 ${
+              index === currentQuoteIndex % 8 
+                ? 'bg-white/60 w-8' 
+                : 'bg-white/20 w-2'
             }`}
           />
         ))}

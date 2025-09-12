@@ -2,74 +2,80 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Gratitude App Design System - Inspired by nature and well-being 
-All colors MUST be HSL.
-*/
+/* Import sophisticated fonts */
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Sophisticated Gratitude App Design System - Premium & Elegant */
 
 @layer base {
   :root {
-    /* Base colors - Soft, calming background */
-    --background: 45 25% 98%;
-    --foreground: 150 25% 15%;
+    /* Base colors - Sophisticated neutral palette */
+    --background: 45 20% 98%;
+    --foreground: 220 20% 8%;
 
-    /* Card surfaces - Subtle warmth */
-    --card: 45 35% 96%;
-    --card-foreground: 150 25% 15%;
+    /* Card surfaces - Premium depth */
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 8%;
 
-    --popover: 45 35% 96%;
-    --popover-foreground: 150 25% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 8%;
 
-    /* Primary - Calming sage green (hope and growth) */
-    --primary: 140 35% 45%;
-    --primary-foreground: 45 35% 98%;
+    /* Primary - Deep emerald (luxury & growth) */
+    --primary: 158 64% 52%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Soft golden warmth (gratitude and appreciation) */
-    --secondary: 45 60% 88%;
-    --secondary-foreground: 150 25% 25%;
+    /* Secondary - Warm pearl (elegance) */
+    --secondary: 45 25% 94%;
+    --secondary-foreground: 220 20% 20%;
 
-    /* Muted - Gentle neutrals */
-    --muted: 45 25% 92%;
-    --muted-foreground: 150 15% 55%;
+    /* Muted - Sophisticated grays */
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 8% 46%;
 
-    /* Accent - Peaceful blue (tranquility) */
-    --accent: 200 45% 85%;
-    --accent-foreground: 150 25% 25%;
+    /* Accent - Rich sapphire (premium) */
+    --accent: 214 84% 56%;
+    --accent-foreground: 0 0% 100%;
 
-    /* Success - Nature green */
-    --success: 140 55% 50%;
-    --success-foreground: 45 35% 98%;
+    /* Success - Vibrant emerald */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
 
-    /* Gratitude gold - Premium feeling */
-    --gratitude: 45 75% 65%;
-    --gratitude-foreground: 150 25% 15%;
+    /* Gratitude - Luxurious gold */
+    --gratitude: 43 96% 56%;
+    --gratitude-foreground: 220 20% 8%;
 
-    /* Inspiration - Soft lavender */
-    --inspiration: 260 35% 80%;
-    --inspiration-foreground: 150 25% 25%;
+    /* Inspiration - Royal amethyst */
+    --inspiration: 271 81% 56%;
+    --inspiration-foreground: 0 0% 100%;
 
-    --destructive: 0 65% 55%;
-    --destructive-foreground: 45 35% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 45 25% 88%;
-    --input: 45 25% 90%;
-    --ring: 140 35% 45%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 158 64% 52%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    /* Gradients for beautiful effects */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(140 45% 55%));
-    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(45 70% 75%));
-    --gradient-gratitude: linear-gradient(135deg, hsl(var(--gratitude)), hsl(45 85% 75%));
-    --gradient-peaceful: linear-gradient(135deg, hsl(var(--accent)), hsl(200 55% 75%));
+    /* Premium gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(158 64% 52%), hsl(158 54% 42%));
+    --gradient-secondary: linear-gradient(135deg, hsl(45 25% 94%), hsl(45 35% 88%));
+    --gradient-gratitude: linear-gradient(135deg, hsl(43 96% 56%), hsl(38 92% 50%));
+    --gradient-peaceful: linear-gradient(135deg, hsl(214 84% 56%), hsl(214 74% 46%));
+    --gradient-hero: linear-gradient(135deg, hsl(158 64% 52%), hsl(214 84% 56%));
+    --gradient-elegant: linear-gradient(180deg, hsl(0 0% 100%), hsl(45 25% 98%));
 
-    /* Shadows for depth */
-    --shadow-soft: 0 4px 20px -4px hsl(var(--primary) / 0.15);
-    --shadow-warm: 0 8px 32px -8px hsl(var(--gratitude) / 0.2);
-    --shadow-card: 0 2px 16px -2px hsl(140 35% 45% / 0.1);
+    /* Sophisticated shadows */
+    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+    --shadow-warm: 0 4px 16px -4px hsl(43 96% 56% / 0.25);
+    --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
+    --shadow-elegant: 0 10px 25px -5px hsl(0 0% 0% / 0.1), 0 8px 10px -6px hsl(0 0% 0% / 0.1);
+    --shadow-premium: 0 20px 25px -5px hsl(0 0% 0% / 0.1), 0 8px 10px -6px hsl(0 0% 0% / 0.1);
 
-    /* Animations */
-    --transition-gentle: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Smooth animations */
+    --transition-gentle: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-smooth: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 
     --sidebar-background: 0 0% 98%;
 
@@ -89,41 +95,46 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 220 24% 6%;
+    --foreground: 220 14% 96%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 220 20% 8%;
+    --card-foreground: 220 14% 96%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 220 20% 8%;
+    --popover-foreground: 220 14% 96%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 158 64% 52%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 220 16% 12%;
+    --secondary-foreground: 220 14% 96%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 220 16% 12%;
+    --muted-foreground: 220 8% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 214 84% 56%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --border: 220 16% 16%;
+    --input: 220 16% 16%;
+    --ring: 158 64% 52%;
+    
+    --sidebar-background: 220 20% 8%;
+    --sidebar-foreground: 220 14% 96%;
+    --sidebar-primary: 158 64% 52%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 220 16% 12%;
+    --sidebar-accent-foreground: 220 14% 96%;
+    --sidebar-border: 220 16% 16%;
+    --sidebar-ring: 158 64% 52%;
+
+    /* Dark mode gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(158 64% 52%), hsl(214 84% 56%));
+    --gradient-elegant: linear-gradient(180deg, hsl(220 20% 8%), hsl(220 24% 6%));
   }
 }
 
@@ -133,6 +144,88 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Crimson Text', Georgia, serif;
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  /* Premium card styles */
+  .card-premium {
+    @apply bg-gradient-elegant shadow-elegant border border-border/50 backdrop-blur-sm;
+  }
+
+  .card-sophisticated {
+    @apply bg-card shadow-card border border-border/30 transition-all duration-300 hover:shadow-elegant hover:border-border/60;
+  }
+
+  /* Glass morphism effect */
+  .glass {
+    @apply bg-white/80 dark:bg-black/20 backdrop-blur-xl border border-white/20 shadow-soft;
+  }
+
+  /* Elegant button hover */
+  .btn-elegant {
+    @apply transition-all duration-300 hover:shadow-soft hover:-translate-y-0.5;
+  }
+
+  /* Premium text styles */
+  .text-elegant {
+    @apply text-foreground/80 leading-relaxed;
+  }
+
+  .text-premium {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent font-medium;
+  }
+
+  /* Smooth animations */
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.4s ease-out;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }

@@ -80,15 +80,24 @@ export default {
         'gradient-secondary': 'var(--gradient-secondary)',
         'gradient-gratitude': 'var(--gradient-gratitude)',
         'gradient-peaceful': 'var(--gradient-peaceful)',
+        'gradient-hero': 'var(--gradient-hero)',
+        'gradient-elegant': 'var(--gradient-elegant)',
       },
       boxShadow: {
         'soft': 'var(--shadow-soft)',
         'warm': 'var(--shadow-warm)',
         'card': 'var(--shadow-card)',
+        'elegant': 'var(--shadow-elegant)',
+        'premium': 'var(--shadow-premium)',
       },
       transitionTimingFunction: {
         'gentle': 'var(--transition-gentle)',
         'bounce': 'var(--transition-bounce)',
+        'smooth': 'var(--transition-smooth)',
+      },
+      fontFamily: {
+        'serif': ['Crimson Text', 'Georgia', 'serif'],
+        'sans': ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
       },
       keyframes: {
         "accordion-down": {
