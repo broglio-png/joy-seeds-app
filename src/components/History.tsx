@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar, Heart, Mail, Gift, ArrowLeft } from "lucide-react";
+import { Calendar, Heart, Mail, Gift, ArrowLeft, Printer } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 interface HistoryProps {
   isOpen: boolean;
@@ -22,63 +25,119 @@ interface HistoryItem {
     title?: string;
     items?: string[];
     recipient?: string;
+    recipient_email?: string;
+    sender_name?: string;
     message?: string;
     description?: string;
   };
 }
 
-// Dados mockados para demonstração
-const mockHistoryData: HistoryItem[] = [
-  {
-    id: '1',
-    type: 'gratitude',
-    date: new Date(2024, 8, 8),
-    content: {
-      items: [
-        'Pela manhã ensolarada de hoje',
-        'Pelo café quentinho que me despertou',
-        'Pela conversa especial com um amigo querido'
-      ]
-    }
-  },
-  {
-    id: '2',
-    type: 'letter',
-    date: new Date(2024, 8, 7),
-    content: {
-      recipient: 'Maria Silva',
-      title: 'Carta de Gratidão',
-      message: 'Querida Maria, quero expressar minha gratidão por toda sua dedicação e carinho...'
-    }
-  },
-  {
-    id: '3',
-    type: 'deed',
-    date: new Date(2024, 8, 6),
-    content: {
-      description: 'Ajudei um vizinho idoso com as compras do mercado'
-    }
-  },
-  {
-    id: '4',
-    type: 'gratitude',
-    date: new Date(2024, 8, 5),
-    content: {
-      items: [
-        'Pela saúde de minha família',
-        'Pelo trabalho que me realiza',
-        'Pelos momentos de paz e tranquilidade'
-      ]
-    }
-  }
-];
 
 const History = ({ isOpen, onOpenChange }: HistoryProps) => {
   const [selectedTab, setSelectedTab] = useState<'all' | 'gratitude' | 'letter' | 'deed'>('all');
+  const [historyData, setHistoryData] = useState<HistoryItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+  const { toast } = useToast();
 
-  const filteredHistory = mockHistoryData.filter(item => 
+  const filteredHistory = historyData.filter(item => 
     selectedTab === 'all' || item.type === selectedTab
   );
+
+  const fetchHistoryData = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      // Buscar gratidões
+      const { data: gratitudeData } = await supabase
+        .from('gratitude_entries')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      // Buscar cartas
+      const { data: lettersData } = await supabase
+        .from('gratitude_letters')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      // Buscar boas ações
+      const { data: deedsData } = await supabase
+        .from('good_deeds')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      const allHistory: HistoryItem[] = [];
+
+      // Adicionar gratidões
+      if (gratitudeData) {
+        gratitudeData.forEach(entry => {
+          const items = entry.content.split('\n').filter(item => item.trim());
+          allHistory.push({
+            id: entry.id,
+            type: 'gratitude',
+            date: new Date(entry.created_at),
+            content: { items }
+          });
+        });
+      }
+
+      // Adicionar cartas
+      if (lettersData) {
+        lettersData.forEach(letter => {
+          allHistory.push({
+            id: letter.id,
+            type: 'letter',
+            date: new Date(letter.created_at),
+            content: {
+              recipient: letter.recipient_name,
+              recipient_email: letter.recipient_email,
+              sender_name: letter.sender_name,
+              message: letter.content
+            }
+          });
+        });
+      }
+
+      // Adicionar boas ações
+      if (deedsData) {
+        deedsData.forEach(deed => {
+          allHistory.push({
+            id: deed.id,
+            type: 'deed',
+            date: new Date(deed.created_at),
+            content: {
+              title: deed.title,
+              description: deed.description || ''
+            }
+          });
+        });
+      }
+
+      // Ordenar por data (mais recente primeiro)
+      allHistory.sort((a, b) => b.date.getTime() - a.date.getTime());
+      setHistoryData(allHistory);
+
+    } catch (error) {
+      console.error('Erro ao carregar histórico:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar o histórico.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen && user) {
+      fetchHistoryData();
+    }
+  }, [isOpen, user]);
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -149,6 +208,9 @@ const History = ({ isOpen, onOpenChange }: HistoryProps) => {
         
         {item.type === 'deed' && (
           <div>
+            {item.content.title && (
+              <p className="text-sm font-medium mb-1">{item.content.title}</p>
+            )}
             <p className="text-sm text-muted-foreground">
               {item.content.description}
             </p>
@@ -159,8 +221,169 @@ const History = ({ isOpen, onOpenChange }: HistoryProps) => {
   );
 
   const getTabCount = (type: string) => {
-    if (type === 'all') return mockHistoryData.length;
-    return mockHistoryData.filter(item => item.type === type).length;
+    if (type === 'all') return historyData.length;
+    return historyData.filter(item => item.type === type).length;
+  };
+
+  const handlePrint = () => {
+    // Criar uma nova janela para impressão
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    // Criar o conteúdo HTML para impressão
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Meu Histórico de Gratidão</title>
+        <style>
+          @page {
+            margin: 2cm;
+            size: A4;
+          }
+          body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 20px;
+          }
+          .header h1 {
+            color: #1e293b;
+            margin: 0;
+            font-size: 28px;
+          }
+          .header .date {
+            color: #64748b;
+            font-size: 14px;
+            margin-top: 10px;
+          }
+          .entry {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-left: 4px solid #22c55e;
+            background: #f8fafc;
+            border-radius: 0 8px 8px 0;
+            page-break-inside: avoid;
+          }
+          .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+          }
+          .entry-type {
+            font-weight: bold;
+            font-size: 14px;
+            color: #059669;
+            text-transform: uppercase;
+          }
+          .entry-date {
+            color: #64748b;
+            font-size: 12px;
+          }
+          .gratitude-list {
+            list-style: none;
+            padding: 0;
+          }
+          .gratitude-list li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+          }
+          .gratitude-list li:before {
+            content: '♥';
+            color: #22c55e;
+            position: absolute;
+            left: 0;
+          }
+          .letter-content {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+          }
+          .letter-recipient {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #1e293b;
+          }
+          .deed-title {
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 5px;
+          }
+          .page-break {
+            page-break-before: always;
+          }
+          @media print {
+            body { print-color-adjust: exact; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>🙏 Meu Histórico de Gratidão</h1>
+          <div class="date">Gerado em ${format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</div>
+        </div>
+        
+        ${filteredHistory.map((item, index) => `
+          <div class="entry ${index > 0 && index % 8 === 0 ? 'page-break' : ''}">
+            <div class="entry-header">
+              <span class="entry-type">${getTypeLabel(item.type)}</span>
+              <span class="entry-date">${format(item.date, "dd 'de' MMM 'de' yyyy", { locale: ptBR })}</span>
+            </div>
+            
+            ${item.type === 'gratitude' && item.content.items ? `
+              <ul class="gratitude-list">
+                ${item.content.items.map(gratitude => `<li>${gratitude}</li>`).join('')}
+              </ul>
+            ` : ''}
+            
+            ${item.type === 'letter' ? `
+              <div class="letter-content">
+                <div class="letter-recipient">Para: ${item.content.recipient}</div>
+                <div>${item.content.message}</div>
+              </div>
+            ` : ''}
+            
+            ${item.type === 'deed' ? `
+              <div>
+                ${item.content.title ? `<div class="deed-title">${item.content.title}</div>` : ''}
+                <div>${item.content.description}</div>
+              </div>
+            ` : ''}
+          </div>
+        `).join('')}
+        
+        ${filteredHistory.length === 0 ? `
+          <div style="text-align: center; padding: 50px; color: #64748b;">
+            <p>Nenhum registro encontrado para impressão.</p>
+          </div>
+        ` : ''}
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    
+    // Aguardar o carregamento e imprimir
+    printWindow.onload = () => {
+      printWindow.print();
+      printWindow.close();
+    };
+    
+    toast({
+      title: "Histórico preparado!",
+      description: "Abrindo janela de impressão...",
+    });
   };
 
   return (
@@ -194,7 +417,12 @@ const History = ({ isOpen, onOpenChange }: HistoryProps) => {
           
           <ScrollArea className="h-[400px] mt-4">
             <TabsContent value="all" className="mt-0">
-              {filteredHistory.length > 0 ? (
+              {loading ? (
+                <div className="text-center py-8">
+                  <Calendar className="w-12 h-12 mx-auto mb-3 text-muted-foreground animate-pulse" />
+                  <p className="text-muted-foreground">Carregando histórico...</p>
+                </div>
+              ) : filteredHistory.length > 0 ? (
                 <div className="space-y-3">
                   {filteredHistory.map(renderHistoryItem)}
                 </div>
@@ -207,7 +435,12 @@ const History = ({ isOpen, onOpenChange }: HistoryProps) => {
             </TabsContent>
             
             <TabsContent value="gratitude" className="mt-0">
-              {filteredHistory.length > 0 ? (
+              {loading ? (
+                <div className="text-center py-8">
+                  <Heart className="w-12 h-12 mx-auto mb-3 text-muted-foreground animate-pulse" />
+                  <p className="text-muted-foreground">Carregando gratidões...</p>
+                </div>
+              ) : filteredHistory.length > 0 ? (
                 <div className="space-y-3">
                   {filteredHistory.map(renderHistoryItem)}
                 </div>
@@ -223,7 +456,12 @@ const History = ({ isOpen, onOpenChange }: HistoryProps) => {
             </TabsContent>
             
             <TabsContent value="letter" className="mt-0">
-              {filteredHistory.length > 0 ? (
+              {loading ? (
+                <div className="text-center py-8">
+                  <Mail className="w-12 h-12 mx-auto mb-3 text-muted-foreground animate-pulse" />
+                  <p className="text-muted-foreground">Carregando cartas...</p>
+                </div>
+              ) : filteredHistory.length > 0 ? (
                 <div className="space-y-3">
                   {filteredHistory.map(renderHistoryItem)}
                 </div>
@@ -239,7 +477,12 @@ const History = ({ isOpen, onOpenChange }: HistoryProps) => {
             </TabsContent>
             
             <TabsContent value="deed" className="mt-0">
-              {filteredHistory.length > 0 ? (
+              {loading ? (
+                <div className="text-center py-8">
+                  <Gift className="w-12 h-12 mx-auto mb-3 text-muted-foreground animate-pulse" />
+                  <p className="text-muted-foreground">Carregando boas ações...</p>
+                </div>
+              ) : filteredHistory.length > 0 ? (
                 <div className="space-y-3">
                   {filteredHistory.map(renderHistoryItem)}
                 </div>
@@ -256,7 +499,19 @@ const History = ({ isOpen, onOpenChange }: HistoryProps) => {
           </ScrollArea>
         </Tabs>
         
-        <div className="mt-4 pt-4 border-t">
+        <div className="mt-4 pt-4 border-t space-y-2">
+          {filteredHistory.length > 0 && (
+            <Button 
+              onClick={handlePrint}
+              variant="default" 
+              className="w-full"
+              disabled={loading}
+            >
+              <Printer className="w-4 h-4 mr-2" />
+              Imprimir Histórico
+            </Button>
+          )}
+          
           <Button 
             onClick={() => onOpenChange(false)}
             variant="outline" 
