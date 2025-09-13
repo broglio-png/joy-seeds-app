@@ -15,11 +15,7 @@ import { Clipboard } from '@capacitor/clipboard';
 
 // Security constants
 const MAX_NAME_LENGTH = 100;
-const MAX_EMAIL_LENGTH = 254; // RFC 5321 limit
 const MAX_MESSAGE_LENGTH = 2000;
-
-// Email validation regex
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Input sanitization function
 const sanitizeInput = (input: string): string => {
@@ -40,25 +36,9 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [recipientName, setRecipientName] = useState("");
-  const [recipientEmail, setRecipientEmail] = useState("");
   const [letterContent, setLetterContent] = useState("");
   const [senderName, setSenderName] = useState("");
-  const [emailError, setEmailError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const validateEmail = (email: string): boolean => {
-    if (!email) return true; // Email is optional
-    if (email.length > MAX_EMAIL_LENGTH) {
-      setEmailError("Email muito longo");
-      return false;
-    }
-    if (!EMAIL_REGEX.test(email)) {
-      setEmailError("Formato de email inválido");
-      return false;
-    }
-    setEmailError("");
-    return true;
-  };
 
   const validateTextLength = (text: string, maxLength: number): boolean => {
     return text.length <= maxLength;
@@ -71,7 +51,6 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
     
     // Sanitize inputs
     const sanitizedRecipientName = sanitizeInput(recipientName.trim());
-    const sanitizedRecipientEmail = recipientEmail.trim();
     const sanitizedLetterContent = sanitizeInput(letterContent.trim());
     const sanitizedSenderName = sanitizeInput(senderName.trim());
 
@@ -79,7 +58,7 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
     if (!sanitizedRecipientName || !sanitizedLetterContent || !sanitizedSenderName) {
       toast({
         title: "Campos obrigatórios",
-        description: "Preencha pelo menos o nome do destinatário, sua mensagem e seu nome.",
+        description: "Preencha o nome do destinatário, sua mensagem e seu nome.",
         variant: "destructive"
       });
       setLoading(false);
@@ -117,12 +96,6 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
       return;
     }
 
-    // Email validation
-    if (!validateEmail(sanitizedRecipientEmail)) {
-      setLoading(false);
-      return;
-    }
-
     try {
       // Save to database
       const { error } = await supabase
@@ -130,7 +103,7 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
         .insert({
           user_id: user.id,
           recipient_name: sanitizedRecipientName,
-          recipient_email: sanitizedRecipientEmail || '',
+          recipient_email: '',
           content: sanitizedLetterContent,
           sender_name: sanitizedSenderName
         });
@@ -149,76 +122,44 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
           string: letterText
         });
         
-        // Use native share API if available
-        if (sanitizedRecipientEmail) {
-          try {
-            await Share.share({
-              title: `Uma carta de gratidão de ${sanitizedSenderName} 💝`,
-              text: letterText,
-              dialogTitle: 'Compartilhar carta de gratidão'
-            });
-            
-            toast({
-              title: "Carta salva e compartilhada! 💌",
-              description: "Carta salva no histórico e compartilhada. Também foi copiada para área de transferência.",
-            });
-          } catch (shareError) {
-            // If share fails, just notify about clipboard
-            toast({
-              title: "Carta salva! 💌",
-              description: "Carta salva no histórico e copiada para área de transferência.",
-            });
-          }
-        } else {
-          // No email, just share the text
-          try {
-            await Share.share({
-              title: `Uma carta de gratidão de ${sanitizedSenderName} 💝`,
-              text: letterText,
-              dialogTitle: 'Compartilhar carta de gratidão'
-            });
-            
-            toast({
-              title: "Carta salva e compartilhada! 💌",
-              description: "Carta salva no histórico e compartilhada.",
-            });
-          } catch (shareError) {
-            toast({
-              title: "Carta salva! 💌",
-              description: "Carta salva no histórico e copiada para área de transferência.",
-            });
-          }
-        }
-      } else {
-        // Web fallback behavior
-        // Copy to clipboard
-        navigator.clipboard.writeText(letterText);
-        
-        if (sanitizedRecipientEmail) {
-          // Create mailto link
-          const subject = encodeURIComponent(`Uma carta de gratidão de ${sanitizedSenderName} 💝`);
-          const body = encodeURIComponent(letterText);
-          const mailtoLink = `mailto:${sanitizedRecipientEmail}?subject=${subject}&body=${body}`;
-          window.open(mailtoLink, '_blank');
+        // Use native share API to share the text
+        try {
+          await Share.share({
+            title: `Uma carta de gratidão de ${sanitizedSenderName} 💝`,
+            text: letterText,
+            dialogTitle: 'Compartilhar carta de gratidão'
+          });
           
           toast({
-            title: "Carta salva e enviada! 💌",
-            description: "Carta salva no histórico. Link do email aberto. Carta copiada para área de transferência.",
+            title: "Carta salva e compartilhada! 💌",
+            description: "Carta salva no histórico e copiada para área de transferência. Agora você pode colar no WhatsApp ou email.",
           });
-        } else {
+        } catch (shareError) {
           toast({
             title: "Carta salva! 💌",
-            description: "Carta salva no histórico e copiada para área de transferência.",
+            description: "Carta salva no histórico e copiada para área de transferência. Agora você pode colar no WhatsApp ou email.",
+          });
+        }
+      } else {
+        // Web behavior - just copy to clipboard
+        try {
+          await navigator.clipboard.writeText(letterText);
+          toast({
+            title: "Carta salva e copiada! 💌",
+            description: "Carta salva no histórico e copiada para área de transferência. Agora você pode colar no WhatsApp ou email.",
+          });
+        } catch (clipboardError) {
+          toast({
+            title: "Carta salva! 💌",
+            description: "Carta salva no histórico. Não foi possível copiar automaticamente, mas você pode copiar o texto manualmente.",
           });
         }
       }
 
       // Reset form
       setRecipientName("");
-      setRecipientEmail("");
       setLetterContent("");
       setSenderName("");
-      setEmailError("");
       onOpenChange(false);
     } catch (error) {
       toast({
@@ -273,34 +214,6 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
               </div>
             </div>
             
-            <div>
-              <Label htmlFor="email">Email (opcional)</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="email@exemplo.com"
-                value={recipientEmail}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value.length <= MAX_EMAIL_LENGTH) {
-                    setRecipientEmail(value);
-                    validateEmail(value);
-                  }
-                }}
-                maxLength={MAX_EMAIL_LENGTH}
-                className={`mt-1 ${emailError ? 'border-destructive focus:border-destructive' : ''}`}
-              />
-              {emailError && (
-                <div className="flex items-center gap-1 text-xs text-destructive mt-1">
-                  <AlertCircle className="w-3 h-3" />
-                  {emailError}
-                </div>
-              )}
-              <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                <span></span>
-                <span>{recipientEmail.length}/{MAX_EMAIL_LENGTH}</span>
-              </div>
-            </div>
           </div>
 
           {/* Inspiration */}
@@ -377,7 +290,7 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
               className="flex-1 gap-2"
             >
               {Capacitor.isNativePlatform() ? <Share2 className="w-4 h-4" /> : <Send className="w-4 h-4" />}
-              {loading ? "Salvando..." : Capacitor.isNativePlatform() ? "Compartilhar" : "Enviar Carta"}
+              {loading ? "Salvando..." : Capacitor.isNativePlatform() ? "Compartilhar" : "Copiar Carta"}
             </Button>
           </div>
         </div>
