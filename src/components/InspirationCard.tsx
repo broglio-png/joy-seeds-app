@@ -217,6 +217,87 @@ const inspirationalQuotes = [
   {
     text: "A gratidão é a bússola que nos guia para o que realmente importa.",
     author: "Anônimo"
+  },
+  // Reverendo Alexandre Broglio e outras frases inspiracionais
+  {
+    text: "A gratidão é a chave que abre as portas do coração e transforma a vida ordinária em extraordinária.",
+    author: "Rev. Alexandre Broglio"
+  },
+  {
+    text: "Quando cultivamos a gratidão, plantamos sementes de alegria que florescem em todas as estações da vida.",
+    author: "Anônimo"
+  },
+  {
+    text: "A gratidão é o perfume que a alma desprende quando reconhece as bênçãos recebidas.",
+    author: "Anônimo"
+  },
+  {
+    text: "Seja grato não apenas pelo que você tem, mas também pelas dificuldades que não teve.",
+    author: "John F. Kennedy"
+  },
+  {
+    text: "A gratidão é a memória do coração que nunca esquece do bem recebido.",
+    author: "Jean-Baptiste Massillon"
+  },
+  {
+    text: "Um coração grato é como um ímã para os milagres da vida.",
+    author: "Anônimo"
+  },
+  {
+    text: "A gratidão transforma o que temos em suficiente, e mais do que suficiente.",
+    author: "Melodie Beattie"
+  },
+  {
+    text: "Quando você agradece, você reconhece que existe um poder maior que governa sua vida.",
+    author: "Oprah Winfrey"
+  },
+  {
+    text: "A gratidão é a virtude que mais nos aproxima de Deus e dos homens.",
+    author: "Cícero"
+  },
+  {
+    text: "Agradeça pelo ontem, viva o hoje e tenha esperança no amanhã.",
+    author: "Anônimo"
+  },
+  {
+    text: "A gratidão é como uma oração silenciosa que eleva a alma.",
+    author: "Anônimo"
+  },
+  {
+    text: "Quando você muda a maneira de olhar para as coisas, as coisas que você olha mudam.",
+    author: "Wayne Dyer"
+  },
+  {
+    text: "A gratidão é a fonte da verdadeira riqueza, pois nos ensina a valorizar o que já possuímos.",
+    author: "Anônimo"
+  },
+  {
+    text: "Ser grato é reconhecer que a vida é um presente, não um direito.",
+    author: "Anônimo"
+  },
+  {
+    text: "A gratidão é o antídoto para a amargura e o remédio para a tristeza.",
+    author: "Anônimo"
+  },
+  {
+    text: "Cada dia oferece mil motivos para agradecer, mas só precisamos de olhos para vê-los.",
+    author: "Anônimo"
+  },
+  {
+    text: "A gratidão é a música mais bela que podemos tocar no instrumento da vida.",
+    author: "Anônimo"
+  },
+  {
+    text: "Quando você é grato, o medo desaparece e a abundância aparece.",
+    author: "Tony Robbins"
+  },
+  {
+    text: "A gratidão é a única resposta apropriada aos dons da vida.",
+    author: "Albert Schweitzer"
+  },
+  {
+    text: "Um dia sem gratidão é um dia perdido na jornada da felicidade.",
+    author: "Anônimo"
   }
 ];
 
