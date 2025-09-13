@@ -94,7 +94,8 @@ const Auth = () => {
     } else {
       toast({
         title: "Cadastro realizado!",
-        description: "Conta criada com sucesso. Você já pode usar o app!"
+        description: "Verifique seu e-mail para confirmar sua conta e poder fazer login.",
+        duration: 6000
       });
     }
     
