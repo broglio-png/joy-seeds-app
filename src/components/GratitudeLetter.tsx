@@ -6,9 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Mail, Send, Heart, AlertCircle } from "lucide-react";
+import { Mail, Send, Heart, AlertCircle, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Capacitor } from '@capacitor/core';
+import { Share } from '@capacitor/share';
+import { Clipboard } from '@capacitor/clipboard';
 
 // Security constants
 const MAX_NAME_LENGTH = 100;
@@ -134,26 +137,81 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
 
       if (error) throw error;
 
-      // Create mailto link with sanitized content
-      const subject = encodeURIComponent(`Uma carta de gratidão de ${sanitizedSenderName} 💝`);
-      const body = encodeURIComponent(
-        `Querido(a) ${sanitizedRecipientName},\n\n${sanitizedLetterContent}\n\nCom gratidão,\n${sanitizedSenderName}\n\n---\nEscrita através do Diário da Gratidão GRA`
-      );
+      // Create the letter text
+      const letterText = `Querido(a) ${sanitizedRecipientName},\n\n${sanitizedLetterContent}\n\nCom gratidão,\n${sanitizedSenderName}\n\n---\nEscrita através do Diário da Gratidão`;
       
-      const mailtoLink = `mailto:${sanitizedRecipientEmail}?subject=${subject}&body=${body}`;
+      // Check if we're on a native platform
+      const isNative = Capacitor.isNativePlatform();
       
-      // Copy to clipboard as fallback
-      const letterText = `Querido(a) ${sanitizedRecipientName},\n\n${sanitizedLetterContent}\n\nCom gratidão,\n${sanitizedSenderName}`;
-      navigator.clipboard.writeText(letterText);
-      
-      if (sanitizedRecipientEmail) {
-        window.open(mailtoLink, '_blank');
+      if (isNative) {
+        // Use native clipboard API
+        await Clipboard.write({
+          string: letterText
+        });
+        
+        // Use native share API if available
+        if (sanitizedRecipientEmail) {
+          try {
+            await Share.share({
+              title: `Uma carta de gratidão de ${sanitizedSenderName} 💝`,
+              text: letterText,
+              dialogTitle: 'Compartilhar carta de gratidão'
+            });
+            
+            toast({
+              title: "Carta salva e compartilhada! 💌",
+              description: "Carta salva no histórico e compartilhada. Também foi copiada para área de transferência.",
+            });
+          } catch (shareError) {
+            // If share fails, just notify about clipboard
+            toast({
+              title: "Carta salva! 💌",
+              description: "Carta salva no histórico e copiada para área de transferência.",
+            });
+          }
+        } else {
+          // No email, just share the text
+          try {
+            await Share.share({
+              title: `Uma carta de gratidão de ${sanitizedSenderName} 💝`,
+              text: letterText,
+              dialogTitle: 'Compartilhar carta de gratidão'
+            });
+            
+            toast({
+              title: "Carta salva e compartilhada! 💌",
+              description: "Carta salva no histórico e compartilhada.",
+            });
+          } catch (shareError) {
+            toast({
+              title: "Carta salva! 💌",
+              description: "Carta salva no histórico e copiada para área de transferência.",
+            });
+          }
+        }
+      } else {
+        // Web fallback behavior
+        // Copy to clipboard
+        navigator.clipboard.writeText(letterText);
+        
+        if (sanitizedRecipientEmail) {
+          // Create mailto link
+          const subject = encodeURIComponent(`Uma carta de gratidão de ${sanitizedSenderName} 💝`);
+          const body = encodeURIComponent(letterText);
+          const mailtoLink = `mailto:${sanitizedRecipientEmail}?subject=${subject}&body=${body}`;
+          window.open(mailtoLink, '_blank');
+          
+          toast({
+            title: "Carta salva e enviada! 💌",
+            description: "Carta salva no histórico. Link do email aberto. Carta copiada para área de transferência.",
+          });
+        } else {
+          toast({
+            title: "Carta salva! 💌",
+            description: "Carta salva no histórico e copiada para área de transferência.",
+          });
+        }
       }
-
-      toast({
-        title: "Carta salva e enviada! 💌",
-        description: sanitizedRecipientEmail ? "Carta salva no histórico. Link do email aberto. Carta copiada para área de transferência." : "Carta salva no histórico e copiada para área de transferência.",
-      });
 
       // Reset form
       setRecipientName("");
@@ -318,8 +376,8 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
               variant="gradient"
               className="flex-1 gap-2"
             >
-              <Send className="w-4 h-4" />
-              {loading ? "Salvando..." : "Enviar Carta"}
+              {Capacitor.isNativePlatform() ? <Share2 className="w-4 h-4" /> : <Send className="w-4 h-4" />}
+              {loading ? "Salvando..." : Capacitor.isNativePlatform() ? "Compartilhar" : "Enviar Carta"}
             </Button>
           </div>
         </div>
