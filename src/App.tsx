@@ -7,6 +7,8 @@ import { AuthProvider } from "@/hooks/useAuth";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
+import UpdatePassword from "./pages/UpdatePassword";
 import NotFound from "./pages/NotFound";
 import gratitudeBg from "@/assets/gratitude-bg.jpg";
 
@@ -37,6 +39,8 @@ const App = () => {
               <BrowserRouter>
                 <Routes>
                   <Route path="/auth" element={<Auth />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/update-password" element={<UpdatePassword />} />
                   <Route path="/" element={
                     <ProtectedRoute>
                       <Index />
