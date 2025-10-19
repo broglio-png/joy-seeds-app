@@ -8,10 +8,10 @@ const Index = () => {
   console.log("Index page rendering...");
   
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       <Header />
       
-      <main className="p-6 space-y-6 max-w-md mx-auto">
+      <main className="p-6 space-y-8 max-w-md mx-auto">
         {/* Daily Inspiration */}
         <InspirationCard />
         
@@ -27,7 +27,7 @@ const Index = () => {
         </div>
         
         {/* Footer Space */}
-        <div className="h-8"></div>
+        <div className="h-12"></div>
       </main>
     </div>
   );

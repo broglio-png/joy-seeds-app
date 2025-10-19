@@ -123,15 +123,15 @@ const GratitudeEntry = () => {
 
   if (isSubmitted) {
     return (
-      <Card className="p-6 bg-gradient-secondary border-0 shadow-warm">
-        <div className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-success/20 rounded-full flex items-center justify-center">
-            <CheckCircle className="w-8 h-8 text-success" />
+      <Card className="p-8 bg-gradient-secondary border-0 shadow-premium rounded-[2rem]">
+        <div className="text-center space-y-5">
+          <div className="mx-auto w-20 h-20 bg-success/20 rounded-full flex items-center justify-center shadow-elegant">
+            <CheckCircle className="w-10 h-10 text-success" strokeWidth={2.5} />
           </div>
-          <h3 className="text-lg font-semibold text-secondary-foreground">
+          <h3 className="text-xl font-bold text-sophisticated font-serif">
             Suas gratidões foram registradas!
           </h3>
-          <p className="text-secondary-foreground/70">
+          <p className="text-elegant font-medium">
             Continue cultivando esse hábito maravilhoso. Até amanhã! 🌱
           </p>
         </div>
@@ -140,26 +140,26 @@ const GratitudeEntry = () => {
   }
 
   return (
-    <Card className="p-6 bg-card border-0 shadow-card">
-      <div className="space-y-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 bg-gradient-gratitude rounded-full">
-            <Heart className="w-5 h-5 text-gratitude-foreground" fill="currentColor" />
+    <Card className="p-8 card-sophisticated border-0 shadow-elegant rounded-[2rem]">
+      <div className="space-y-7">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="icon-container-gratitude">
+            <Heart className="w-6 h-6 text-gratitude-foreground" fill="currentColor" strokeWidth={2.5} />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-card-foreground">Minhas 3 Bênçãos de Hoje</h2>
-            <p className="text-sm text-muted-foreground">O que te fez sentir grato hoje?</p>
+            <h2 className="text-xl font-bold text-sophisticated font-serif">Minhas 3 Bênçãos de Hoje</h2>
+            <p className="text-sm text-muted-foreground font-semibold">O que te fez sentir grato hoje?</p>
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-5">
           {gratitudes.map((gratitude, index) => (
-            <div key={index} className="space-y-3 p-4 bg-muted/50 rounded-xl">
-              <div className="flex items-center gap-2">
-                <span className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-xs font-bold text-primary-foreground">
+            <div key={index} className="space-y-4 p-6 bg-gradient-to-br from-muted/60 to-muted/30 rounded-[1.5rem] border border-border/20 shadow-soft">
+              <div className="flex items-center gap-3">
+                <span className="w-7 h-7 bg-gradient-primary rounded-full flex items-center justify-center text-sm font-bold text-primary-foreground shadow-soft">
                   {index + 1}
                 </span>
-                <label className="text-sm font-medium text-card-foreground">
+                <label className="text-sm font-bold text-sophisticated">
                   Hoje sou grato por...
                 </label>
               </div>
@@ -169,14 +169,14 @@ const GratitudeEntry = () => {
                 value={gratitude.text}
                 onChange={(e) => updateGratitude(index, 'text', e.target.value)}
                 maxLength={MAX_GRATITUDE_TEXT_LENGTH}
-                className="min-h-[80px] bg-background border-border/50 focus:border-primary transition-gentle"
+                className="min-h-[80px] bg-background/80 border-border/40 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-smooth rounded-xl font-medium"
               />
-              <div className="text-xs text-muted-foreground text-right">
+              <div className="text-xs text-muted-foreground text-right font-semibold">
                 {gratitude.text.length}/{MAX_GRATITUDE_TEXT_LENGTH}
               </div>
               
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-card-foreground">
+              <div className="space-y-3">
+                <label className="text-sm font-bold text-sophisticated">
                   Por que isso foi importante para mim?
                 </label>
                 <Textarea
@@ -184,9 +184,9 @@ const GratitudeEntry = () => {
                   value={gratitude.reason}
                   onChange={(e) => updateGratitude(index, 'reason', e.target.value)}
                   maxLength={MAX_GRATITUDE_REASON_LENGTH}
-                  className="min-h-[60px] bg-background border-border/50 focus:border-primary transition-gentle"
+                  className="min-h-[60px] bg-background/80 border-border/40 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-smooth rounded-xl font-medium"
                 />
-                <div className="text-xs text-muted-foreground text-right">
+                <div className="text-xs text-muted-foreground text-right font-semibold">
                   {gratitude.reason.length}/{MAX_GRATITUDE_REASON_LENGTH}
                 </div>
               </div>
@@ -198,9 +198,9 @@ const GratitudeEntry = () => {
           onClick={handleSubmit}
           disabled={loading}
           variant="gradient"
-          className="w-full font-semibold py-3 rounded-xl transition-gentle"
+          className="w-full font-bold py-6 rounded-[1.25rem] text-base shadow-elegant transition-smooth hover:shadow-premium"
         >
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="w-5 h-5 mr-2" strokeWidth={2.5} />
           {loading ? "Salvando..." : "Registrar Minhas Gratidões"}
         </Button>
       </div>

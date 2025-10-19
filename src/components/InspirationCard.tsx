@@ -320,30 +320,33 @@ const InspirationCard = () => {
   const quote = inspirationalQuotes[currentQuoteIndex];
 
   return (
-    <div className="card-sophisticated bg-gradient-peaceful rounded-3xl p-8 animate-scale-in">
-      <div className="flex items-start gap-4">
-        <div className="p-3 glass rounded-2xl shrink-0">
-          <Sparkles className="w-6 h-6 text-white" />
+    <div className="card-sophisticated bg-gradient-peaceful rounded-[2rem] p-8 shadow-elegant animate-scale-in overflow-hidden relative">
+      {/* Subtle decorative gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
+      
+      <div className="flex items-start gap-4 relative z-10">
+        <div className="glass p-3 rounded-[1.25rem] shrink-0 shadow-soft">
+          <Sparkles className="w-6 h-6 text-white" strokeWidth={2.5} />
         </div>
         <div className={`space-y-4 flex-1 transition-all duration-500 ${isAnimating ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}>
-          <blockquote className="text-white font-serif text-xl leading-relaxed font-medium">
+          <blockquote className="text-white font-serif text-xl leading-relaxed font-semibold tracking-tight">
             "{quote.text}"
           </blockquote>
-          <cite className="text-white/80 text-sm font-medium tracking-wide">
+          <cite className="text-white/90 text-sm font-bold tracking-wide">
             — {quote.author}
           </cite>
         </div>
       </div>
       
-      {/* Indicador de progresso elegante */}
-      <div className="flex justify-center mt-6 gap-2">
+      {/* Indicador de progresso sofisticado */}
+      <div className="flex justify-center mt-7 gap-2 relative z-10">
         {inspirationalQuotes.slice(0, 8).map((_, index) => (
           <div
             key={index}
-            className={`h-1 rounded-full transition-all duration-500 ${
+            className={`h-1.5 rounded-full transition-all duration-500 ${
               index === currentQuoteIndex % 8 
-                ? 'bg-white/60 w-8' 
-                : 'bg-white/20 w-2'
+                ? 'bg-white/80 w-10 shadow-sm' 
+                : 'bg-white/25 w-2.5 hover:bg-white/40'
             }`}
           />
         ))}

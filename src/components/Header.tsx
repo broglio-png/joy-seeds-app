@@ -10,20 +10,20 @@ const Header = () => {
   };
 
   return (
-    <header className="glass rounded-b-3xl border-b-0 shadow-premium animate-fade-in">
-      <div className="p-8">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-hero rounded-2xl shadow-elegant">
-              <Heart className="w-8 h-8 text-white" fill="currentColor" />
+    <header className="glass rounded-b-[2rem] border-b-0 shadow-premium animate-fade-in sticky top-0 z-50">
+      <div className="p-6 md:p-8">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            <div className="icon-container-primary shrink-0 animate-glow">
+              <Heart className="w-7 h-7 text-white" fill="currentColor" strokeWidth={2.5} />
             </div>
-            <div className="space-y-1">
-              <h1 className="text-2xl font-serif font-semibold text-premium tracking-tight">
+            <div className="space-y-1.5 min-w-0">
+              <h1 className="text-2xl font-serif font-bold text-sophisticated tracking-tight">
                 Diário da Gratidão
               </h1>
-              <p className="text-elegant text-sm max-w-md">
+              <p className="text-elegant text-xs md:text-sm max-w-md line-clamp-2">
                 "A gratidão é a ferramenta mais poderosa no nosso relacionamento com Deus" 
-                <span className="block font-medium text-muted-foreground/60 mt-1">— Rev. Alexandre Broglio</span>
+                <span className="block font-semibold text-muted-foreground/70 mt-0.5">— Rev. Alexandre Broglio</span>
               </p>
             </div>
           </div>
@@ -33,20 +33,20 @@ const Header = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="btn-elegant bg-white/10 hover:bg-white/20 text-foreground border border-border/20 backdrop-blur-sm"
+                className="btn-elegant glass hover:bg-white/30 text-foreground border border-white/30 shrink-0"
               >
-                <User className="w-4 h-4 mr-2" />
-                <span className="font-medium">
+                <User className="w-4 h-4 md:mr-2" strokeWidth={2.5} />
+                <span className="font-semibold hidden md:inline">
                   {user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Usuário'}
                 </span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="glass border border-border/30">
+            <DropdownMenuContent align="end" className="glass border border-border/40 shadow-elegant">
               <DropdownMenuItem 
                 onClick={handleSignOut}
-                className="text-destructive hover:text-destructive-foreground hover:bg-destructive/10"
+                className="text-destructive hover:text-destructive-foreground hover:bg-destructive/15 font-medium cursor-pointer"
               >
-                <LogOut className="w-4 h-4 mr-2" />
+                <LogOut className="w-4 h-4 mr-2" strokeWidth={2.5} />
                 Sair
               </DropdownMenuItem>
             </DropdownMenuContent>

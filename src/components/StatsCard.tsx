@@ -97,59 +97,59 @@ const StatsCard = () => {
   }
 
   return (
-    <div className="card-sophisticated bg-gradient-elegant rounded-3xl p-8 animate-slide-up">
-      <div className="space-y-6">
+    <div className="card-sophisticated bg-gradient-elegant rounded-[2rem] p-8 animate-slide-up">
+      <div className="space-y-7">
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-gradient-hero rounded-xl">
-            <TrendingUp className="w-6 h-6 text-white" />
+          <div className="icon-container-primary">
+            <TrendingUp className="w-6 h-6 text-white" strokeWidth={2.5} />
           </div>
-          <h3 className="font-serif text-xl font-semibold text-foreground">Sua Jornada</h3>
+          <h3 className="font-serif text-xl font-bold text-sophisticated">Sua Jornada</h3>
         </div>
         
         <div className="grid grid-cols-2 gap-4">
-          <div className="glass text-center p-6 rounded-2xl btn-elegant">
+          <div className="glass text-center p-6 rounded-[1.5rem] btn-elegant group">
             <div className="flex items-center justify-center mb-3">
-              <div className="p-2 bg-primary/10 rounded-xl">
-                <Calendar className="w-5 h-5 text-primary" />
+              <div className="p-2.5 bg-primary/15 rounded-xl group-hover:bg-primary/25 transition-colors">
+                <Calendar className="w-5 h-5 text-primary" strokeWidth={2.5} />
               </div>
             </div>
-            <p className="text-3xl font-bold text-foreground mb-1">{stats.consecutiveDays}</p>
-            <p className="text-sm text-muted-foreground font-medium">dias seguidos</p>
+            <p className="text-3xl font-bold text-sophisticated mb-1.5">{stats.consecutiveDays}</p>
+            <p className="text-sm text-muted-foreground font-semibold">dias seguidos</p>
           </div>
           
-          <div className="glass text-center p-6 rounded-2xl btn-elegant">
+          <div className="glass text-center p-6 rounded-[1.5rem] btn-elegant group">
             <div className="flex items-center justify-center mb-3">
-              <div className="p-2 bg-success/10 rounded-xl">
-                <TrendingUp className="w-5 h-5 text-success" />
+              <div className="p-2.5 bg-success/15 rounded-xl group-hover:bg-success/25 transition-colors">
+                <TrendingUp className="w-5 h-5 text-success" strokeWidth={2.5} />
               </div>
             </div>
-            <p className="text-3xl font-bold text-foreground mb-1">{stats.totalGratitudes}</p>
-            <p className="text-sm text-muted-foreground font-medium">gratidões</p>
+            <p className="text-3xl font-bold text-sophisticated mb-1.5">{stats.totalGratitudes}</p>
+            <p className="text-sm text-muted-foreground font-semibold">gratidões</p>
           </div>
           
-          <div className="glass text-center p-6 rounded-2xl btn-elegant">
+          <div className="glass text-center p-6 rounded-[1.5rem] btn-elegant group">
             <div className="flex items-center justify-center mb-3">
-              <div className="p-2 bg-inspiration/10 rounded-xl">
-                <Mail className="w-5 h-5 text-inspiration" />
+              <div className="p-2.5 bg-inspiration/15 rounded-xl group-hover:bg-inspiration/25 transition-colors">
+                <Mail className="w-5 h-5 text-inspiration" strokeWidth={2.5} />
               </div>
             </div>
-            <p className="text-3xl font-bold text-foreground mb-1">{stats.lettersWritten}</p>
-            <p className="text-sm text-muted-foreground font-medium">cartas enviadas</p>
+            <p className="text-3xl font-bold text-sophisticated mb-1.5">{stats.lettersWritten}</p>
+            <p className="text-sm text-muted-foreground font-semibold">cartas enviadas</p>
           </div>
           
-          <div className="glass text-center p-6 rounded-2xl btn-elegant">
+          <div className="glass text-center p-6 rounded-[1.5rem] btn-elegant group">
             <div className="flex items-center justify-center mb-3">
-              <div className="p-2 bg-accent/10 rounded-xl">
-                <Users className="w-5 h-5 text-accent" />
+              <div className="p-2.5 bg-accent/15 rounded-xl group-hover:bg-accent/25 transition-colors">
+                <Users className="w-5 h-5 text-accent" strokeWidth={2.5} />
               </div>
             </div>
-            <p className="text-3xl font-bold text-foreground mb-1">{stats.weeklyStreak}</p>
-            <p className="text-sm text-muted-foreground font-medium">esta semana</p>
+            <p className="text-3xl font-bold text-sophisticated mb-1.5">{stats.weeklyStreak}</p>
+            <p className="text-sm text-muted-foreground font-semibold">esta semana</p>
           </div>
         </div>
         
-        <div className="glass p-6 rounded-2xl border border-gratitude/20 bg-gradient-to-r from-gratitude/5 to-gratitude/10">
-          <p className="text-center font-serif text-lg font-medium text-gratitude-foreground">
+        <div className="glass p-6 rounded-[1.5rem] border-2 border-gratitude/30 bg-gradient-to-br from-gratitude/10 via-gratitude/5 to-transparent">
+          <p className="text-center font-serif text-lg font-bold text-sophisticated leading-relaxed">
             🎉 Parabéns! Você está cultivando a gratidão com consistência.
           </p>
         </div>

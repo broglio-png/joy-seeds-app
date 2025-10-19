@@ -89,6 +89,7 @@ export default {
         'card': 'var(--shadow-card)',
         'elegant': 'var(--shadow-elegant)',
         'premium': 'var(--shadow-premium)',
+        'glow': 'var(--shadow-glow)',
       },
       transitionTimingFunction: {
         'gentle': 'var(--transition-gentle)',

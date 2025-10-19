@@ -54,12 +54,12 @@ const QuickActions = () => {
 
   return (
     <>
-      <div className="card-sophisticated rounded-3xl p-8 animate-fade-in">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-gradient-hero rounded-xl">
-            <PenTool className="w-6 h-6 text-white" />
+      <div className="card-sophisticated rounded-[2rem] p-8 animate-fade-in">
+        <div className="flex items-center gap-3 mb-7">
+          <div className="icon-container-accent">
+            <PenTool className="w-6 h-6 text-white" strokeWidth={2.5} />
           </div>
-          <h3 className="font-serif text-xl font-semibold text-card-foreground">Ações Rápidas</h3>
+          <h3 className="font-serif text-xl font-bold text-sophisticated">Ações Rápidas</h3>
         </div>
         
         <div className="grid grid-cols-2 gap-4">
@@ -70,14 +70,14 @@ const QuickActions = () => {
                 key={index}
                 onClick={action.action}
                 variant="ghost"
-                className={`${action.color} h-auto p-6 flex flex-col items-center gap-3 text-white hover:opacity-90 btn-elegant shadow-soft border-0 rounded-2xl`}
+                className={`${action.color} h-auto p-6 flex flex-col items-center gap-3 text-white hover:opacity-95 btn-elegant shadow-elegant border-0 rounded-[1.5rem] group`}
               >
-                <div className="p-2 glass rounded-xl">
-                  <Icon className="w-6 h-6" />
+                <div className="glass p-3 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                  <Icon className="w-6 h-6" strokeWidth={2.5} />
                 </div>
                 <div className="text-center">
-                  <p className="font-semibold text-sm font-serif">{action.title}</p>
-                  <p className="text-xs opacity-90 font-medium">{action.description}</p>
+                  <p className="font-bold text-sm font-serif tracking-tight">{action.title}</p>
+                  <p className="text-xs opacity-95 font-medium mt-1">{action.description}</p>
                 </div>
               </Button>
             );

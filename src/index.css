@@ -10,72 +10,75 @@
 @layer base {
   :root {
     /* Base colors - Sophisticated neutral palette */
-    --background: 45 20% 98%;
-    --foreground: 220 20% 8%;
+    --background: 42 35% 97%;
+    --foreground: 220 25% 10%;
 
     /* Card surfaces - Premium depth */
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 8%;
+    --card-foreground: 220 25% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 8%;
+    --popover-foreground: 220 25% 10%;
 
-    /* Primary - Deep emerald (luxury & growth) */
-    --primary: 158 64% 52%;
+    /* Primary - Deep emerald (luxury & growth) - More vibrant */
+    --primary: 158 70% 48%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Warm pearl (elegance) */
-    --secondary: 45 25% 94%;
-    --secondary-foreground: 220 20% 20%;
+    /* Secondary - Warm cream (elegance) */
+    --secondary: 42 45% 92%;
+    --secondary-foreground: 220 25% 15%;
 
-    /* Muted - Sophisticated grays */
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 8% 46%;
+    /* Muted - Sophisticated grays with better contrast */
+    --muted: 220 18% 94%;
+    --muted-foreground: 220 15% 40%;
 
-    /* Accent - Rich sapphire (premium) */
-    --accent: 214 84% 56%;
+    /* Accent - Rich sapphire (premium) - More vibrant */
+    --accent: 214 90% 52%;
     --accent-foreground: 0 0% 100%;
 
-    /* Success - Vibrant emerald */
-    --success: 142 76% 36%;
+    /* Success - Vibrant emerald - Higher contrast */
+    --success: 142 80% 38%;
     --success-foreground: 0 0% 100%;
 
-    /* Gratitude - Luxurious gold */
-    --gratitude: 43 96% 56%;
-    --gratitude-foreground: 220 20% 8%;
+    /* Gratitude - Luxurious gold - Better contrast */
+    --gratitude: 43 98% 52%;
+    --gratitude-foreground: 220 25% 10%;
 
-    /* Inspiration - Royal amethyst */
-    --inspiration: 271 81% 56%;
+    /* Inspiration - Royal amethyst - More vibrant */
+    --inspiration: 271 85% 54%;
     --inspiration-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 78% 53%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 158 64% 52%;
+    --border: 220 18% 88%;
+    --input: 220 18% 88%;
+    --ring: 158 70% 48%;
 
-    --radius: 1rem;
+    --radius: 1.125rem;
 
-    /* Premium gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(158 64% 52%), hsl(158 54% 42%));
-    --gradient-secondary: linear-gradient(135deg, hsl(45 25% 94%), hsl(45 35% 88%));
-    --gradient-gratitude: linear-gradient(135deg, hsl(43 96% 56%), hsl(38 92% 50%));
-    --gradient-peaceful: linear-gradient(135deg, hsl(214 84% 56%), hsl(214 74% 46%));
-    --gradient-hero: linear-gradient(135deg, hsl(158 64% 52%), hsl(214 84% 56%));
-    --gradient-elegant: linear-gradient(180deg, hsl(0 0% 100%), hsl(45 25% 98%));
+    /* Premium gradients - More vibrant and sophisticated */
+    --gradient-primary: linear-gradient(135deg, hsl(158 70% 48%) 0%, hsl(158 60% 38%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(42 45% 92%) 0%, hsl(42 50% 85%) 100%);
+    --gradient-gratitude: linear-gradient(135deg, hsl(43 98% 52%) 0%, hsl(38 95% 48%) 100%);
+    --gradient-peaceful: linear-gradient(135deg, hsl(214 90% 52%) 0%, hsl(214 85% 42%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(158 70% 48%) 0%, hsl(214 90% 52%) 100%);
+    --gradient-elegant: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(42 30% 98%) 100%);
+    --gradient-sophisticated: linear-gradient(135deg, hsl(271 85% 54%) 0%, hsl(214 90% 52%) 100%);
 
-    /* Sophisticated shadows */
-    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-    --shadow-warm: 0 4px 16px -4px hsl(43 96% 56% / 0.25);
-    --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
-    --shadow-elegant: 0 10px 25px -5px hsl(0 0% 0% / 0.1), 0 8px 10px -6px hsl(0 0% 0% / 0.1);
-    --shadow-premium: 0 20px 25px -5px hsl(0 0% 0% / 0.1), 0 8px 10px -6px hsl(0 0% 0% / 0.1);
+    /* Sophisticated shadows with depth */
+    --shadow-soft: 0 2px 8px 0 hsl(0 0% 0% / 0.08), 0 1px 3px 0 hsl(0 0% 0% / 0.06);
+    --shadow-warm: 0 8px 24px -8px hsl(43 98% 52% / 0.35), 0 4px 12px -4px hsl(43 98% 52% / 0.2);
+    --shadow-card: 0 4px 12px -2px hsl(0 0% 0% / 0.08), 0 2px 8px -2px hsl(0 0% 0% / 0.06);
+    --shadow-elegant: 0 12px 32px -8px hsl(0 0% 0% / 0.12), 0 6px 16px -6px hsl(0 0% 0% / 0.08);
+    --shadow-premium: 0 24px 48px -12px hsl(0 0% 0% / 0.15), 0 12px 24px -8px hsl(0 0% 0% / 0.1);
+    --shadow-glow: 0 0 24px hsl(158 70% 48% / 0.25), 0 8px 32px -8px hsl(158 70% 48% / 0.3);
 
     /* Smooth animations */
     --transition-gentle: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    --transition-smooth: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    --transition-smooth: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+    --transition-elegant: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
     --sidebar-background: 0 0% 98%;
 
@@ -95,46 +98,62 @@
   }
 
   .dark {
-    --background: 220 24% 6%;
-    --foreground: 220 14% 96%;
+    --background: 220 30% 5%;
+    --foreground: 220 18% 96%;
 
-    --card: 220 20% 8%;
-    --card-foreground: 220 14% 96%;
+    --card: 220 25% 8%;
+    --card-foreground: 220 18% 96%;
 
-    --popover: 220 20% 8%;
-    --popover-foreground: 220 14% 96%;
+    --popover: 220 25% 8%;
+    --popover-foreground: 220 18% 96%;
 
-    --primary: 158 64% 52%;
+    --primary: 158 70% 55%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 16% 12%;
-    --secondary-foreground: 220 14% 96%;
+    --secondary: 220 20% 12%;
+    --secondary-foreground: 220 18% 96%;
 
-    --muted: 220 16% 12%;
-    --muted-foreground: 220 8% 60%;
+    --muted: 220 20% 12%;
+    --muted-foreground: 220 12% 65%;
 
-    --accent: 214 84% 56%;
+    --accent: 214 90% 58%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    --success: 142 80% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --gratitude: 43 98% 58%;
+    --gratitude-foreground: 220 25% 10%;
+
+    --inspiration: 271 85% 60%;
+    --inspiration-foreground: 0 0% 100%;
+
+    --destructive: 0 78% 58%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 16% 16%;
-    --input: 220 16% 16%;
-    --ring: 158 64% 52%;
+    --border: 220 20% 18%;
+    --input: 220 20% 18%;
+    --ring: 158 70% 55%;
     
-    --sidebar-background: 220 20% 8%;
-    --sidebar-foreground: 220 14% 96%;
-    --sidebar-primary: 158 64% 52%;
+    --sidebar-background: 220 25% 8%;
+    --sidebar-foreground: 220 18% 96%;
+    --sidebar-primary: 158 70% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 16% 12%;
-    --sidebar-accent-foreground: 220 14% 96%;
-    --sidebar-border: 220 16% 16%;
-    --sidebar-ring: 158 64% 52%;
+    --sidebar-accent: 220 20% 12%;
+    --sidebar-accent-foreground: 220 18% 96%;
+    --sidebar-border: 220 20% 18%;
+    --sidebar-ring: 158 70% 55%;
 
-    /* Dark mode gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(158 64% 52%), hsl(214 84% 56%));
-    --gradient-elegant: linear-gradient(180deg, hsl(220 20% 8%), hsl(220 24% 6%));
+    /* Dark mode gradients - More vibrant */
+    --gradient-primary: linear-gradient(135deg, hsl(158 70% 55%) 0%, hsl(158 60% 45%) 100%);
+    --gradient-gratitude: linear-gradient(135deg, hsl(43 98% 58%) 0%, hsl(38 95% 54%) 100%);
+    --gradient-peaceful: linear-gradient(135deg, hsl(214 90% 58%) 0%, hsl(214 85% 48%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(158 70% 55%) 0%, hsl(214 90% 58%) 100%);
+    --gradient-elegant: linear-gradient(180deg, hsl(220 25% 8%) 0%, hsl(220 30% 5%) 100%);
+    --gradient-sophisticated: linear-gradient(135deg, hsl(271 85% 60%) 0%, hsl(214 90% 58%) 100%);
+    
+    /* Dark mode shadows with glow */
+    --shadow-glow: 0 0 32px hsl(158 70% 55% / 0.35), 0 8px 40px -8px hsl(158 70% 55% / 0.4);
   }
 }
 
@@ -157,50 +176,75 @@
 @layer components {
   /* Premium card styles */
   .card-premium {
-    @apply bg-gradient-elegant shadow-elegant border border-border/50 backdrop-blur-sm;
+    @apply bg-gradient-elegant shadow-premium border border-border/40 backdrop-blur-lg;
   }
 
   .card-sophisticated {
-    @apply bg-card shadow-card border border-border/30 transition-all duration-300 hover:shadow-elegant hover:border-border/60;
+    @apply bg-card/95 shadow-elegant border border-border/20 backdrop-blur-sm transition-all duration-500 hover:shadow-premium hover:border-primary/20 hover:-translate-y-0.5;
   }
 
-  /* Glass morphism effect */
+  /* Glass morphism effect - More sophisticated */
   .glass {
-    @apply bg-white/80 dark:bg-black/20 backdrop-blur-xl border border-white/20 shadow-soft;
+    @apply bg-white/90 dark:bg-white/10 backdrop-blur-2xl border border-white/30 dark:border-white/10 shadow-soft;
   }
 
-  /* Elegant button hover */
+  /* Icon containers with better contrast */
+  .icon-container {
+    @apply p-3 rounded-2xl backdrop-blur-sm border border-white/20 shadow-soft transition-all duration-300;
+  }
+
+  .icon-container-primary {
+    @apply icon-container bg-gradient-primary text-white shadow-glow;
+  }
+
+  .icon-container-accent {
+    @apply icon-container bg-gradient-peaceful text-white;
+  }
+
+  .icon-container-gratitude {
+    @apply icon-container bg-gradient-gratitude text-gratitude-foreground;
+  }
+
+  /* Elegant button hover with better effects */
   .btn-elegant {
-    @apply transition-all duration-300 hover:shadow-soft hover:-translate-y-0.5;
+    @apply transition-all duration-500 hover:shadow-elegant hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98];
   }
 
   /* Premium text styles */
   .text-elegant {
-    @apply text-foreground/80 leading-relaxed;
+    @apply text-foreground/85 leading-relaxed tracking-wide;
   }
 
   .text-premium {
-    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent font-medium;
+    @apply bg-gradient-to-r from-primary via-accent to-inspiration bg-clip-text text-transparent font-semibold;
+  }
+
+  .text-sophisticated {
+    @apply text-foreground font-medium tracking-tight;
   }
 
   /* Smooth animations */
   .animate-fade-in {
-    animation: fadeIn 0.6s ease-out;
+    animation: fadeIn 0.7s ease-out;
   }
 
   .animate-slide-up {
-    animation: slideUp 0.5s ease-out;
+    animation: slideUp 0.6s ease-out;
   }
 
   .animate-scale-in {
-    animation: scaleIn 0.4s ease-out;
+    animation: scaleIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
   }
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(24px);
   }
   to {
     opacity: 1;
@@ -211,7 +255,7 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(40px);
   }
   to {
     opacity: 1;
@@ -222,10 +266,19 @@
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.92);
   }
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px hsl(var(--primary) / 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 16px hsl(var(--primary) / 0.8));
   }
 }
