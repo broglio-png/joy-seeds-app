@@ -325,8 +325,8 @@ const InspirationCard = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
       
       <div className="flex items-start gap-4 relative z-10">
-        <div className="glass p-3 rounded-[1.25rem] shrink-0 shadow-soft">
-          <Sparkles className="w-6 h-6 text-white" strokeWidth={2.5} />
+        <div className="bg-white/20 backdrop-blur-sm p-3 rounded-[1.25rem] shrink-0 shadow-soft border border-white/30">
+          <Sparkles className="w-6 h-6 text-white" strokeWidth={3} />
         </div>
         <div className={`space-y-4 flex-1 transition-all duration-500 ${isAnimating ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}>
           <blockquote className="text-white font-serif text-xl leading-relaxed font-semibold tracking-tight">
