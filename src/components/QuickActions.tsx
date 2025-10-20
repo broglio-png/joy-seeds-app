@@ -44,7 +44,7 @@ const QuickActions = () => {
     {
       icon: Calendar,
       title: "Meu Histórico",
-      description: "Ver registros passados",
+      description: "Ver registros",
       color: "bg-gradient-secondary",
       action: () => {
         setIsHistoryModalOpen(true);
