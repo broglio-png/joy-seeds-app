@@ -18,10 +18,7 @@ const Header = () => {
               <Heart className="w-7 h-7 text-white" fill="currentColor" strokeWidth={2.5} />
             </div>
             <div className="space-y-1.5 min-w-0">
-              <h1 className="text-2xl font-serif font-bold text-sophisticated tracking-tight">
-                Diário da Gratidão
-              </h1>
-              <p className="text-elegant text-xs md:text-sm max-w-md line-clamp-2">
+              <p className="text-elegant text-sm md:text-base max-w-2xl">
                 "A gratidão é a ferramenta mais poderosa no nosso relacionamento com Deus" 
                 <span className="block font-semibold text-muted-foreground/70 mt-0.5">— Rev. Alexandre Broglio</span>
               </p>
