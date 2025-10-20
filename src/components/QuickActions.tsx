@@ -72,8 +72,8 @@ const QuickActions = () => {
                 variant="ghost"
                 className={`${action.color} h-auto p-6 flex flex-col items-center gap-3 text-white hover:opacity-95 btn-elegant shadow-elegant border-0 rounded-[1.5rem] group`}
               >
-                <div className="glass p-3 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                  <Icon className="w-6 h-6" strokeWidth={2.5} />
+                <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:scale-110 transition-transform duration-300 border border-white/30">
+                  <Icon className="w-6 h-6" strokeWidth={3} />
                 </div>
                 <div className="text-center">
                   <p className="font-bold text-sm font-serif tracking-tight">{action.title}</p>
