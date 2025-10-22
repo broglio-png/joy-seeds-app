@@ -113,47 +113,53 @@ const GratitudeLetter = ({ isOpen, onOpenChange }: GratitudeLetterProps) => {
       // Create the letter text
       const letterText = `Querido(a) ${sanitizedRecipientName},\n\n${sanitizedLetterContent}\n\nCom gratidão,\n${sanitizedSenderName}\n\n---\nEscrita através do Diário da Gratidão`;
       
-      // Check if we're on a native platform
-      const isNative = Capacitor.isNativePlatform();
+      // Try multiple methods to ensure it works on all platforms
+      let copySuccess = false;
+      let shareSuccess = false;
       
-      if (isNative) {
-        // Use native clipboard API
+      // Try Capacitor Clipboard first (works on both web and native)
+      try {
         await Clipboard.write({
           string: letterText
         });
-        
-        // Use native share API to share the text
-        try {
-          await Share.share({
-            title: `Uma carta de gratidão de ${sanitizedSenderName} 💝`,
-            text: letterText,
-            dialogTitle: 'Compartilhar carta de gratidão'
-          });
-          
-          toast({
-            title: "Carta salva e compartilhada! 💌",
-            description: "Carta salva no histórico e copiada para área de transferência. Agora você pode colar no WhatsApp ou email.",
-          });
-        } catch (shareError) {
-          toast({
-            title: "Carta salva! 💌",
-            description: "Carta salva no histórico e copiada para área de transferência. Agora você pode colar no WhatsApp ou email.",
-          });
-        }
-      } else {
-        // Web behavior - just copy to clipboard
+        copySuccess = true;
+      } catch (error) {
+        console.log('Capacitor clipboard failed, trying navigator.clipboard', error);
+      }
+      
+      // Fallback to navigator.clipboard if Capacitor failed
+      if (!copySuccess) {
         try {
           await navigator.clipboard.writeText(letterText);
-          toast({
-            title: "Carta salva e copiada! 💌",
-            description: "Carta salva no histórico e copiada para área de transferência. Agora você pode colar no WhatsApp ou email.",
-          });
-        } catch (clipboardError) {
-          toast({
-            title: "Carta salva! 💌",
-            description: "Carta salva no histórico. Não foi possível copiar automaticamente, mas você pode copiar o texto manualmente.",
-          });
+          copySuccess = true;
+        } catch (error) {
+          console.log('Navigator clipboard also failed', error);
         }
+      }
+      
+      // Try native share if available
+      try {
+        await Share.share({
+          title: `Uma carta de gratidão de ${sanitizedSenderName} 💝`,
+          text: letterText,
+          dialogTitle: 'Compartilhar carta de gratidão'
+        });
+        shareSuccess = true;
+      } catch (error) {
+        console.log('Share not available or cancelled', error);
+      }
+      
+      // Show appropriate message
+      if (copySuccess) {
+        toast({
+          title: shareSuccess ? "Carta salva e compartilhada! 💌" : "Carta salva e copiada! 💌",
+          description: "Carta salva no histórico e copiada para área de transferência. Agora você pode colar no WhatsApp ou email.",
+        });
+      } else {
+        toast({
+          title: "Carta salva! 💌",
+          description: "Carta salva no histórico. Não foi possível copiar automaticamente, mas você pode copiar o texto manualmente do histórico.",
+        });
       }
 
       // Reset form
