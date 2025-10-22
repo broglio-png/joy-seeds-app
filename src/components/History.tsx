@@ -228,68 +228,75 @@ const History = ({ isOpen, onOpenChange }: HistoryProps) => {
   };
 
   const handlePrint = async () => {
-    const isNative = Capacitor.isNativePlatform();
+    console.log('handlePrint iniciado');
+    console.log('Capacitor.isNativePlatform():', Capacitor.isNativePlatform());
+    console.log('filteredHistory.length:', filteredHistory.length);
     
-    if (isNative) {
-      // Mobile: criar texto formatado e compartilhar
-      let shareText = `🙏 MEU HISTÓRICO DE GRATIDÃO\n`;
-      shareText += `Gerado em ${format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}\n\n`;
-      shareText += `═══════════════════════════════\n\n`;
+    // Criar texto formatado para compartilhamento/impressão
+    let shareText = `🙏 MEU HISTÓRICO DE GRATIDÃO\n`;
+    shareText += `Gerado em ${format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}\n\n`;
+    shareText += `═══════════════════════════════\n\n`;
+    
+    filteredHistory.forEach((item, index) => {
+      shareText += `${getTypeLabel(item.type).toUpperCase()}\n`;
+      shareText += `${format(item.date, "dd 'de' MMM 'de' yyyy", { locale: ptBR })}\n\n`;
       
-      filteredHistory.forEach((item, index) => {
-        shareText += `${getTypeLabel(item.type).toUpperCase()}\n`;
-        shareText += `${format(item.date, "dd 'de' MMM 'de' yyyy", { locale: ptBR })}\n\n`;
-        
-        if (item.type === 'gratitude' && item.content.items) {
-          item.content.items.forEach(gratitude => {
-            shareText += `♥ ${gratitude}\n`;
-          });
-        } else if (item.type === 'letter') {
-          shareText += `Para: ${item.content.recipient}\n\n`;
-          shareText += `${item.content.message}\n`;
-        } else if (item.type === 'deed') {
-          if (item.content.title) {
-            shareText += `${item.content.title}\n`;
-          }
-          shareText += `${item.content.description}\n`;
+      if (item.type === 'gratitude' && item.content.items) {
+        item.content.items.forEach(gratitude => {
+          shareText += `♥ ${gratitude}\n`;
+        });
+      } else if (item.type === 'letter') {
+        shareText += `Para: ${item.content.recipient}\n\n`;
+        shareText += `${item.content.message}\n`;
+      } else if (item.type === 'deed') {
+        if (item.content.title) {
+          shareText += `${item.content.title}\n`;
         }
-        
-        shareText += `\n───────────────────────────────\n\n`;
+        shareText += `${item.content.description}\n`;
+      }
+      
+      shareText += `\n───────────────────────────────\n\n`;
+    });
+    
+    if (filteredHistory.length === 0) {
+      shareText += `Nenhum registro encontrado.\n`;
+    }
+    
+    // Tentar compartilhar usando Capacitor Share API (funciona em mobile e web)
+    try {
+      console.log('Tentando Share.share...');
+      await Share.share({
+        title: 'Meu Histórico de Gratidão',
+        text: shareText,
+        dialogTitle: 'Compartilhar ou imprimir histórico'
       });
       
-      if (filteredHistory.length === 0) {
-        shareText += `Nenhum registro encontrado.\n`;
-      }
+      toast({
+        title: "Histórico compartilhado!",
+        description: "Escolha imprimir nas opções de compartilhamento ou copie o texto.",
+      });
+      return;
+    } catch (error: any) {
+      console.log('Share.share falhou:', error);
       
-      try {
-        await Share.share({
-          title: 'Meu Histórico de Gratidão',
-          text: shareText,
-          dialogTitle: 'Compartilhar ou imprimir histórico'
-        });
-        
-        toast({
-          title: "Histórico compartilhado!",
-          description: "Escolha imprimir nas opções de compartilhamento.",
-        });
-      } catch (error) {
-        toast({
-          title: "Erro ao compartilhar",
-          description: "Não foi possível compartilhar o histórico.",
-          variant: "destructive",
-        });
-      }
-    } else {
-      // Web/Desktop: usar impressão tradicional
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) {
-        toast({
-          title: "Erro",
-          description: "Não foi possível abrir janela de impressão. Verifique se pop-ups estão bloqueados.",
-          variant: "destructive",
-        });
+      // Se o usuário cancelou, não mostrar erro
+      if (error.message && error.message.includes('cancel')) {
+        console.log('Usuário cancelou o compartilhamento');
         return;
       }
+      
+      // Fallback: tentar impressão tradicional apenas na web
+      if (!Capacitor.isNativePlatform()) {
+        console.log('Tentando impressão tradicional na web...');
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+          toast({
+            title: "Erro",
+            description: "Não foi possível abrir janela de impressão. Verifique se pop-ups estão bloqueados.",
+            variant: "destructive",
+          });
+          return;
+        }
 
       const printContent = `
         <!DOCTYPE html>
@@ -431,18 +438,26 @@ const History = ({ isOpen, onOpenChange }: HistoryProps) => {
         </html>
       `;
 
-      printWindow.document.write(printContent);
-      printWindow.document.close();
-      
-      printWindow.onload = () => {
-        printWindow.print();
-        printWindow.close();
-      };
-      
-      toast({
-        title: "Histórico preparado!",
-        description: "Abrindo janela de impressão...",
-      });
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        
+        printWindow.onload = () => {
+          printWindow.print();
+          printWindow.close();
+        };
+        
+        toast({
+          title: "Histórico preparado!",
+          description: "Abrindo janela de impressão...",
+        });
+      } else {
+        // Mobile e Share API não disponível
+        toast({
+          title: "Função não disponível",
+          description: "Não foi possível compartilhar ou imprimir neste momento.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
