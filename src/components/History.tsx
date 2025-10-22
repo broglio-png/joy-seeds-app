@@ -5,12 +5,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar, Heart, Mail, Gift, ArrowLeft, Printer } from "lucide-react";
+import { Calendar, Heart, Mail, Gift, ArrowLeft, Printer, Share2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { Capacitor } from '@capacitor/core';
+import { Share } from '@capacitor/share';
 
 interface HistoryProps {
   isOpen: boolean;
@@ -225,165 +227,223 @@ const History = ({ isOpen, onOpenChange }: HistoryProps) => {
     return historyData.filter(item => item.type === type).length;
   };
 
-  const handlePrint = () => {
-    // Criar uma nova janela para impressão
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
-
-    // Criar o conteúdo HTML para impressão
-    const printContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Meu Histórico de Gratidão</title>
-        <style>
-          @page {
-            margin: 2cm;
-            size: A4;
-          }
-          body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-          }
-          .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 20px;
-          }
-          .header h1 {
-            color: #1e293b;
-            margin: 0;
-            font-size: 28px;
-          }
-          .header .date {
-            color: #64748b;
-            font-size: 14px;
-            margin-top: 10px;
-          }
-          .entry {
-            margin-bottom: 25px;
-            padding: 15px;
-            border-left: 4px solid #22c55e;
-            background: #f8fafc;
-            border-radius: 0 8px 8px 0;
-            page-break-inside: avoid;
-          }
-          .entry-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-          }
-          .entry-type {
-            font-weight: bold;
-            font-size: 14px;
-            color: #059669;
-            text-transform: uppercase;
-          }
-          .entry-date {
-            color: #64748b;
-            font-size: 12px;
-          }
-          .gratitude-list {
-            list-style: none;
-            padding: 0;
-          }
-          .gratitude-list li {
-            margin-bottom: 8px;
-            padding-left: 20px;
-            position: relative;
-          }
-          .gratitude-list li:before {
-            content: '♥';
-            color: #22c55e;
-            position: absolute;
-            left: 0;
-          }
-          .letter-content {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-          }
-          .letter-recipient {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #1e293b;
-          }
-          .deed-title {
-            font-weight: bold;
-            color: #1e293b;
-            margin-bottom: 5px;
-          }
-          .page-break {
-            page-break-before: always;
-          }
-          @media print {
-            body { print-color-adjust: exact; }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <h1>🙏 Meu Histórico de Gratidão</h1>
-          <div class="date">Gerado em ${format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</div>
-        </div>
+  const handlePrint = async () => {
+    const isNative = Capacitor.isNativePlatform();
+    
+    if (isNative) {
+      // Mobile: criar texto formatado e compartilhar
+      let shareText = `🙏 MEU HISTÓRICO DE GRATIDÃO\n`;
+      shareText += `Gerado em ${format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}\n\n`;
+      shareText += `═══════════════════════════════\n\n`;
+      
+      filteredHistory.forEach((item, index) => {
+        shareText += `${getTypeLabel(item.type).toUpperCase()}\n`;
+        shareText += `${format(item.date, "dd 'de' MMM 'de' yyyy", { locale: ptBR })}\n\n`;
         
-        ${filteredHistory.map((item, index) => `
-          <div class="entry ${index > 0 && index % 8 === 0 ? 'page-break' : ''}">
-            <div class="entry-header">
-              <span class="entry-type">${getTypeLabel(item.type)}</span>
-              <span class="entry-date">${format(item.date, "dd 'de' MMM 'de' yyyy", { locale: ptBR })}</span>
+        if (item.type === 'gratitude' && item.content.items) {
+          item.content.items.forEach(gratitude => {
+            shareText += `♥ ${gratitude}\n`;
+          });
+        } else if (item.type === 'letter') {
+          shareText += `Para: ${item.content.recipient}\n\n`;
+          shareText += `${item.content.message}\n`;
+        } else if (item.type === 'deed') {
+          if (item.content.title) {
+            shareText += `${item.content.title}\n`;
+          }
+          shareText += `${item.content.description}\n`;
+        }
+        
+        shareText += `\n───────────────────────────────\n\n`;
+      });
+      
+      if (filteredHistory.length === 0) {
+        shareText += `Nenhum registro encontrado.\n`;
+      }
+      
+      try {
+        await Share.share({
+          title: 'Meu Histórico de Gratidão',
+          text: shareText,
+          dialogTitle: 'Compartilhar ou imprimir histórico'
+        });
+        
+        toast({
+          title: "Histórico compartilhado!",
+          description: "Escolha imprimir nas opções de compartilhamento.",
+        });
+      } catch (error) {
+        toast({
+          title: "Erro ao compartilhar",
+          description: "Não foi possível compartilhar o histórico.",
+          variant: "destructive",
+        });
+      }
+    } else {
+      // Web/Desktop: usar impressão tradicional
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        toast({
+          title: "Erro",
+          description: "Não foi possível abrir janela de impressão. Verifique se pop-ups estão bloqueados.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const printContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Meu Histórico de Gratidão</title>
+          <style>
+            @page {
+              margin: 2cm;
+              size: A4;
+            }
+            body {
+              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 800px;
+              margin: 0 auto;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+              border-bottom: 2px solid #e2e8f0;
+              padding-bottom: 20px;
+            }
+            .header h1 {
+              color: #1e293b;
+              margin: 0;
+              font-size: 28px;
+            }
+            .header .date {
+              color: #64748b;
+              font-size: 14px;
+              margin-top: 10px;
+            }
+            .entry {
+              margin-bottom: 25px;
+              padding: 15px;
+              border-left: 4px solid #22c55e;
+              background: #f8fafc;
+              border-radius: 0 8px 8px 0;
+              page-break-inside: avoid;
+            }
+            .entry-header {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 10px;
+            }
+            .entry-type {
+              font-weight: bold;
+              font-size: 14px;
+              color: #059669;
+              text-transform: uppercase;
+            }
+            .entry-date {
+              color: #64748b;
+              font-size: 12px;
+            }
+            .gratitude-list {
+              list-style: none;
+              padding: 0;
+            }
+            .gratitude-list li {
+              margin-bottom: 8px;
+              padding-left: 20px;
+              position: relative;
+            }
+            .gratitude-list li:before {
+              content: '♥';
+              color: #22c55e;
+              position: absolute;
+              left: 0;
+            }
+            .letter-content {
+              background: white;
+              padding: 15px;
+              border-radius: 8px;
+              border: 1px solid #e2e8f0;
+            }
+            .letter-recipient {
+              font-weight: bold;
+              margin-bottom: 10px;
+              color: #1e293b;
+            }
+            .deed-title {
+              font-weight: bold;
+              color: #1e293b;
+              margin-bottom: 5px;
+            }
+            .page-break {
+              page-break-before: always;
+            }
+            @media print {
+              body { print-color-adjust: exact; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>🙏 Meu Histórico de Gratidão</h1>
+            <div class="date">Gerado em ${format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</div>
+          </div>
+          
+          ${filteredHistory.map((item, index) => `
+            <div class="entry ${index > 0 && index % 8 === 0 ? 'page-break' : ''}">
+              <div class="entry-header">
+                <span class="entry-type">${getTypeLabel(item.type)}</span>
+                <span class="entry-date">${format(item.date, "dd 'de' MMM 'de' yyyy", { locale: ptBR })}</span>
+              </div>
+              
+              ${item.type === 'gratitude' && item.content.items ? `
+                <ul class="gratitude-list">
+                  ${item.content.items.map(gratitude => `<li>${gratitude}</li>`).join('')}
+                </ul>
+              ` : ''}
+              
+              ${item.type === 'letter' ? `
+                <div class="letter-content">
+                  <div class="letter-recipient">Para: ${item.content.recipient}</div>
+                  <div>${item.content.message}</div>
+                </div>
+              ` : ''}
+              
+              ${item.type === 'deed' ? `
+                <div>
+                  ${item.content.title ? `<div class="deed-title">${item.content.title}</div>` : ''}
+                  <div>${item.content.description}</div>
+                </div>
+              ` : ''}
             </div>
-            
-            ${item.type === 'gratitude' && item.content.items ? `
-              <ul class="gratitude-list">
-                ${item.content.items.map(gratitude => `<li>${gratitude}</li>`).join('')}
-              </ul>
-            ` : ''}
-            
-            ${item.type === 'letter' ? `
-              <div class="letter-content">
-                <div class="letter-recipient">Para: ${item.content.recipient}</div>
-                <div>${item.content.message}</div>
-              </div>
-            ` : ''}
-            
-            ${item.type === 'deed' ? `
-              <div>
-                ${item.content.title ? `<div class="deed-title">${item.content.title}</div>` : ''}
-                <div>${item.content.description}</div>
-              </div>
-            ` : ''}
-          </div>
-        `).join('')}
-        
-        ${filteredHistory.length === 0 ? `
-          <div style="text-align: center; padding: 50px; color: #64748b;">
-            <p>Nenhum registro encontrado para impressão.</p>
-          </div>
-        ` : ''}
-      </body>
-      </html>
-    `;
+          `).join('')}
+          
+          ${filteredHistory.length === 0 ? `
+            <div style="text-align: center; padding: 50px; color: #64748b;">
+              <p>Nenhum registro encontrado para impressão.</p>
+            </div>
+          ` : ''}
+        </body>
+        </html>
+      `;
 
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    
-    // Aguardar o carregamento e imprimir
-    printWindow.onload = () => {
-      printWindow.print();
-      printWindow.close();
-    };
-    
-    toast({
-      title: "Histórico preparado!",
-      description: "Abrindo janela de impressão...",
-    });
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      
+      printWindow.onload = () => {
+        printWindow.print();
+        printWindow.close();
+      };
+      
+      toast({
+        title: "Histórico preparado!",
+        description: "Abrindo janela de impressão...",
+      });
+    }
   };
 
   return (
@@ -507,8 +567,17 @@ const History = ({ isOpen, onOpenChange }: HistoryProps) => {
               className="w-full"
               disabled={loading}
             >
-              <Printer className="w-4 h-4 mr-2" />
-              Imprimir Histórico
+              {Capacitor.isNativePlatform() ? (
+                <>
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Compartilhar Histórico
+                </>
+              ) : (
+                <>
+                  <Printer className="w-4 h-4 mr-2" />
+                  Imprimir Histórico
+                </>
+              )}
             </Button>
           )}
           
